@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login / Register — T0kenRent</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+
+  <style>
+    .auth-wrap {
+      min-height: calc(100vh - 64px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Marketing side */
+    .auth-marketing {
+      background: linear-gradient(160deg, #14141F 0%, #1C1C2E 60%, #14141F 100%);
+      padding: 60px clamp(32px, 5vw, 64px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-marketing .glow1 { width: 520px; height: 520px; background: rgba(168,85,247,.18); top: -120px; left: -120px; }
+    .auth-marketing .glow2 { width: 400px; height: 400px; background: rgba(0,200,255,.14); bottom: -80px; right: -80px; }
+
+    .auth-marketing h1 {
+      font-family:'Syne',sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .auth-marketing p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 380px;
+      position: relative;
+      margin-bottom: 36px;
+    }
+    .auth-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+    .auth-features li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      font-size: .92rem;
+    }
+    .auth-features li .check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--cyan-10);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .auth-marketing .am-foot {
+      position: relative;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    /* Form side */
+    .auth-form-side {
+      background: var(--bg-deep);
+      padding: 60px clamp(20px, 4vw, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family:'Syne',sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .auth-tab.active {
+      background: var(--cyan);
+      color: var(--bg-deep);
+    }
+
+    .auth-card h2 {
+      font-family:'Syne',sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    .auth-card .sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 24px;
+    }
+
+    /* Password strength meter */
+    .pw-strength {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .pw-bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg-surface);
+      transition: background .2s;
+    }
+    .pw-bar.weak    { background: var(--danger); }
+    .pw-bar.fair    { background: var(--warning); }
+    .pw-bar.good    { background: var(--cyan); }
+    .pw-bar.strong  { background: var(--success); }
+    .pw-label {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Show password toggle */
+    .pw-field { position: relative; }
+    .pw-toggle {
+      position: absolute;
+      right: 10px; top: 50%; transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .8rem;
+      font-weight: 600;
+      padding: 4px 8px;
+    }
+    .pw-toggle:hover { color: var(--white); }
+
+    /* Social buttons */
+    .social-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .social-btn {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      color: var(--white);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .social-btn:hover { border-color: var(--cyan); background: var(--cyan-10); }
+
+    .divider-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .78rem;
+      margin-bottom: 22px;
+    }
+    .divider-text::before, .divider-text::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-soft);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: .88rem;
+      color: var(--muted);
+    }
+    .form-footer a { color: var(--cyan); font-weight: 600; }
+
+    /* Logo on top of form (mobile) */
+    .auth-logo {
+      display: none;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-logo a {
+      font-family:'Syne',sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -.5px;
+    }
+    .auth-logo em { color: var(--cyan); font-style: normal; }
+
+    @media (max-width: 900px) {
+      .auth-wrap { grid-template-columns: 1fr; }
+      .auth-marketing { display: none; }
+      .auth-logo { display: block; }
+      .auth-form-side { min-height: 100vh; padding: 40px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="tr-nav">
+  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+  <div class="nav-links ms-auto" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" class="active">Login</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="auth-wrap">
+
+    <!-- Marketing side -->
+    <aside class="auth-marketing">
+      <div class="glow glow1"></div>
+      <div class="glow glow2"></div>
+
+      <div>
+        <a href="index.html" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.5px;display:inline-block;margin-bottom:48px">T<em style="color:var(--cyan);font-style:normal">0</em>kenRent</a>
+
+        <h1>Rent smarter. <br/><span class="g-text">Trustless &amp; transparent.</span></h1>
+        <p>Join a community of owners and renters where every rental is automated, transparent, and trackable.</p>
+
+        <ul class="auth-features">
+          <li><span class="check">✓</span><div><strong style="color:var(--white)">Automatic deposit tracking</strong><br/><span style="color:var(--muted);font-size:.85rem">No more chasing renters for deposits</span></div></li>
+          <li><span class="check">✓</span><div><strong style="color:var(--white)">Clear rental terms upfront</strong><br/><span style="color:var(--muted);font-size:.85rem">Fees, duration, and condition locked in</span></div></li>
+          <li><span class="check">✓</span><div><strong style="color:var(--white)">Verified renters &amp; owners</strong><br/><span style="color:var(--muted);font-size:.85rem">Build trust through transaction history</span></div></li>
+        </ul>
+      </div>
+
+      <div class="am-foot">
+        © 2026 T0kenRent · Web Systems Project
+      </div>
+    </aside>
+
+    <!-- Form side -->
+    <div class="auth-form-side">
+      <div class="auth-card">
+
+        <div class="auth-logo">
+          <a href="index.html">T<em>0</em>kenRent</a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" id="tabSignIn" role="tab" aria-selected="true" onclick="switchTab('signin')">Sign In</button>
+          <button class="auth-tab" id="tabSignUp" role="tab" aria-selected="false" onclick="switchTab('signup')">Create Account</button>
+        </div>
+
+        <!-- SIGN IN -->
+        <div id="signin-pane">
+          <h2>Welcome back</h2>
+          <p class="sub">Log in to manage your rentals and listings.</p>
+
+          <div class="social-row">
+            <button class="social-btn" type="button">G  Google</button>
+            <button class="social-btn" type="button"> Apple</button>
+          </div>
+          <div class="divider-text">or continue with email</div>
+
+          <form id="signinForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="siEmail">Email<span class="req">*</span></label>
+              <input id="siEmail" type="email" class="form-control" placeholder="you@example.com" required autocomplete="email"/>
+              <div class="invalid-feedback">Please enter a valid email.</div>
+            </div>
+
+            <div class="mb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="form-label mb-0" for="siPw">Password<span class="req">*</span></label>
+                <a href="#" style="font-size:.78rem;color:var(--cyan);font-weight:600">Forgot?</a>
+              </div>
+              <div class="pw-field mt-2">
+                <input id="siPw" type="password" class="form-control" placeholder="Your password" required minlength="6" autocomplete="current-password"/>
+                <button type="button" class="pw-toggle" onclick="togglePw('siPw',this)" aria-label="Show password">Show</button>
+              </div>
+              <div class="invalid-feedback">Password must be at least 6 characters.</div>
+            </div>
+
+            <div class="form-check mb-3 mt-3">
+              <input class="form-check-input" type="checkbox" id="remember"/>
+              <label class="form-check-label" for="remember">Remember me on this device</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3">Sign In</button>
+
+            <div class="form-footer">
+              Don't have an account? <a href="#" onclick="switchTab('signup');return false;">Create one</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- SIGN UP -->
+        <div id="signup-pane" style="display:none">
+          <h2>Create your account</h2>
+          <p class="sub">Start renting or listing in under 2 minutes.</p>
+
+          <div class="social-row">
+            <button class="social-btn" type="button">G  Google</button>
+            <button class="social-btn" type="button"> Apple</button>
+          </div>
+          <div class="divider-text">or sign up with email</div>
+
+          <form id="signupForm" novalidate>
+            <div class="row g-2 mb-3">
+              <div class="col">
+                <label class="form-label" for="suFirst">First Name<span class="req">*</span></label>
+                <input id="suFirst" type="text" class="form-control" required autocomplete="given-name"/>
+                <div class="invalid-feedback">Required.</div>
+              </div>
+              <div class="col">
+                <label class="form-label" for="suLast">Last Name<span class="req">*</span></label>
+                <input id="suLast" type="text" class="form-control" required autocomplete="family-name"/>
+                <div class="invalid-feedback">Required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="suEmail">Email<span class="req">*</span></label>
+              <input id="suEmail" type="email" class="form-control" placeholder="you@example.com" required autocomplete="email"/>
+              <div class="invalid-feedback">Please enter a valid email.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="suPw">Password<span class="req">*</span></label>
+              <div class="pw-field">
+                <input id="suPw" type="password" class="form-control" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password"/>
+                <button type="button" class="pw-toggle" onclick="togglePw('suPw',this)" aria-label="Show password">Show</button>
+              </div>
+              <div class="pw-strength" aria-hidden="true">
+                <div class="pw-bar"></div>
+                <div class="pw-bar"></div>
+                <div class="pw-bar"></div>
+                <div class="pw-bar"></div>
+              </div>
+              <div class="pw-label" id="pwLabel">Use 8+ chars with letters, numbers &amp; symbols</div>
+              <div class="invalid-feedback">Password must be at least 8 characters.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="suRole">I want to...</label>
+              <select id="suRole" class="form-select">
+                <option>Rent and list items</option>
+                <option>Rent items only</option>
+                <option>List items only</option>
+              </select>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="suTerms" required/>
+              <label class="form-check-label" for="suTerms">
+                I agree to the <a href="#" style="color:var(--cyan)">Terms of Service</a> and <a href="#" style="color:var(--cyan)">Privacy Policy</a>
+              </label>
+              <div class="invalid-feedback">You must accept the terms.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3">Create Account</button>
+
+            <div class="form-footer">
+              Already have an account? <a href="#" onclick="switchTab('signin');return false;">Sign in</a>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function switchTab(t){
+    const isSignin = t === 'signin';
+    document.getElementById('signin-pane').style.display = isSignin ? '' : 'none';
+    document.getElementById('signup-pane').style.display = isSignin ? 'none' : '';
+    document.getElementById('tabSignIn').classList.toggle('active', isSignin);
+    document.getElementById('tabSignUp').classList.toggle('active', !isSignin);
+    document.getElementById('tabSignIn').setAttribute('aria-selected', isSignin);
+    document.getElementById('tabSignUp').setAttribute('aria-selected', !isSignin);
+  }
+
+  function togglePw(id, btn){
+    const el = document.getElementById(id);
+    if (el.type === 'password') { el.type = 'text'; btn.textContent = 'Hide'; }
+    else { el.type = 'password'; btn.textContent = 'Show'; }
+  }
+
+  // Password strength
+  const suPw = document.getElementById('suPw');
+  const bars = document.querySelectorAll('.pw-bar');
+  const pwLabel = document.getElementById('pwLabel');
+  suPw.addEventListener('input', () => {
+    const v = suPw.value;
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+    if (/\d/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const levels = ['', 'weak', 'fair', 'good', 'strong'];
+    const labels = ['Use 8+ chars with letters, numbers & symbols', 'Weak — too short', 'Fair — add numbers or symbols', 'Good — getting there', 'Strong — great password'];
+    bars.forEach((b, i) => {
+      b.className = 'pw-bar';
+      if (i < score) b.classList.add(levels[score]);
+    });
+    pwLabel.textContent = labels[score];
+  });
+
+  // Email validation helper
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  // Signin form
+  document.getElementById('signinForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let valid = true;
+    const email = document.getElementById('siEmail'), pw = document.getElementById('siPw');
+    if (!isEmail(email.value)) { email.classList.add('is-invalid'); valid = false; } else email.classList.remove('is-invalid');
+    if (pw.value.length < 6) { pw.classList.add('is-invalid'); valid = false; } else pw.classList.remove('is-invalid');
+    if (valid) { window.location.href = 'dashboard.html'; }
+  });
+
+  // Signup form
+  document.getElementById('signupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let valid = true;
+    const required = ['suFirst','suLast','suEmail','suPw'];
+    required.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value) { el.classList.add('is-invalid'); valid = false; }
+      else el.classList.remove('is-invalid');
+    });
+    const email = document.getElementById('suEmail');
+    if (email.value && !isEmail(email.value)) { email.classList.add('is-invalid'); valid = false; }
+    const pw = document.getElementById('suPw');
+    if (pw.value && pw.value.length < 8) { pw.classList.add('is-invalid'); valid = false; }
+    const terms = document.getElementById('suTerms');
+    if (!terms.checked) { terms.classList.add('is-invalid'); valid = false; }
+    else terms.classList.remove('is-invalid');
+
+    if (valid) { window.location.href = 'dashboard.html'; }
+  });
+
+  function toggleNav(btn){
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    btn.textContent = open ? '✕' : '☰';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Industrial Drill Press — T0kenRent</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+
+  <style>
+    .detail-wrap { max-width: 1180px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 32px) 80px; }
+
+    .breadcrumb-bar {
+      display: flex; gap: 8px; align-items: center;
+      font-size: .78rem; color: var(--muted);
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .breadcrumb-bar a:hover { color: var(--cyan); }
+    .breadcrumb-bar span.sep { opacity: .35; }
+    .breadcrumb-bar .current { color: var(--white); }
+
+    /* Gallery */
+    .gallery {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      margin-bottom: 24px;
+    }
+    .gallery-main {
+      height: 420px;
+      background: linear-gradient(135deg, #1C1C2E, #2A1A3E);
+      position: relative;
+      overflow: hidden;
+    }
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery-thumbs { display: flex; gap: 8px; padding: 12px; overflow-x: auto; }
+    .thumb {
+      width: 84px; height: 64px; flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--bg-surface);
+      overflow: hidden;
+      padding: 0;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .2s, transform .2s;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .thumb:hover { transform: translateY(-2px); }
+    .thumb.active, .thumb:focus-visible { border-color: var(--cyan); outline: none; }
+
+    /* Item header */
+    .item-header { margin-bottom: 22px; }
+    .item-header .cat-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .item-header h1 {
+      font-family:'Syne',sans-serif; font-weight: 800;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      letter-spacing: -.5px; margin-bottom: 8px;
+    }
+    .rating { font-size: .85rem; color: var(--muted); }
+    .rating em { color: #FFC000; font-style: normal; }
+    .item-desc { font-size: .92rem; color: var(--soft); line-height: 1.75; margin-bottom: 24px; }
+
+    .item-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .spec { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 10px; padding: 14px 16px; }
+    .spec-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+    .spec-val { font-family:'Syne',sans-serif; font-weight: 700; font-size: .98rem; }
+    .spec-val.cyan { color: var(--cyan); }
+
+    /* Owner card */
+    .owner-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px;
+    }
+    .owner-av {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--cyan-10); border: 2px solid var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-family:'Syne',sans-serif; font-weight: 800;
+      font-size: .9rem; color: var(--cyan); flex-shrink: 0;
+    }
+    .owner-info h4 { font-family:'Syne',sans-serif; font-weight: 700; font-size: .92rem; margin-bottom: 2px; }
+    .owner-info p  { font-size: .76rem; color: var(--muted); }
+    .owner-cta { margin-left: auto; }
+
+    /* Booking sidebar */
+    .booking-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(0,200,255,.14);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      position: sticky;
+      top: 88px;
+    }
+    .price-big { font-family:'Syne',sans-serif; font-weight: 800; font-size: 2rem; color: var(--cyan); margin-bottom: 2px; }
+    .price-big span { font-size: .9rem; color: var(--muted); font-family:'DM Sans',sans-serif; font-weight: 400; }
+    .dep { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
+    .dep strong { color: var(--white); }
+    .booking-breakdown { background: var(--bg-surface); border-radius: 10px; padding: 14px; margin: 16px 0; font-size: .85rem; }
+    .bb-row { display: flex; justify-content: space-between; padding: 4px 0; color: var(--muted); }
+    .bb-row.total { border-top: 1px solid var(--border-mid); margin-top: 8px; padding-top: 10px; color: var(--white); font-weight: 600; font-family:'Syne',sans-serif; }
+    .booking-note { font-size: .76rem; color: var(--muted); text-align: center; margin-top: 12px; line-height: 1.5; }
+
+    /* Reviews */
+    .reviews-section { margin-top: 40px; }
+    .review-card { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; }
+    .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .reviewer { display: flex; align-items: center; gap: 10px; }
+    .rav { width: 36px; height: 36px; border-radius: 50%; background: var(--purple-10); border: 1px solid rgba(168,85,247,.3); display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; font-family:'Syne',sans-serif; color: #C084FC; }
+    .reviewer h5 { font-family:'Syne',sans-serif; font-weight: 700; font-size: .88rem; margin: 0; }
+    .reviewer p  { font-size: .72rem; color: var(--muted); margin: 0; }
+    .stars { color: #FFC000; font-size: .88rem; }
+    .review-text { font-size: .88rem; color: var(--soft); line-height: 1.65; }
+
+    /* Mobile sticky CTA */
+    .mobile-cta {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(11,11,18,.96); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-mid);
+      padding: 12px 16px; z-index: 100;
+      align-items: center; gap: 12px;
+    }
+    .mobile-cta .mc-price { font-family:'Syne',sans-serif; font-weight: 800; color: var(--cyan); font-size: 1.1rem; }
+    .mobile-cta .mc-price span { font-size: .7rem; color: var(--muted); font-weight: 400; font-family:'DM Sans',sans-serif; }
+    .mobile-cta .btn { flex: 1; }
+
+    @media (max-width: 991px) {
+      .booking-box { position: static; }
+      .mobile-cta { display: flex; }
+      body { padding-bottom: 80px; }
+    }
+    @media (max-width: 500px) {
+      .item-specs { grid-template-columns: 1fr; }
+      .gallery-main { height: 260px; font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="tr-nav">
+  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+  <div class="nav-links ms-auto" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="browse.html" class="active">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" class="nav-cta">Login</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="detail-wrap">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+      <a href="browse.html">Browse</a>
+      <span class="sep">/</span>
+      <a href="browse.html?cat=construction">Construction</a>
+      <span class="sep">/</span>
+      <span class="current">Industrial Drill Press</span>
+    </nav>
+
+    <div class="row g-4">
+
+      <!-- LEFT -->
+      <div class="col-lg-7">
+
+        <div class="gallery">
+          <div class="gallery-main" aria-label="Main image">
+            <img id="mainImg" src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=1200&q=75"
+                 alt="Industrial Drill Press"
+                 onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill1/1200/800'"/>
+          </div>
+          <div class="gallery-thumbs" role="tablist" aria-label="Image thumbnails">
+            <button class="thumb active" onclick="setThumb(this,'1572981779307-38b8cabb2407','drill1')" role="tab" aria-selected="true" aria-label="View image 1">
+              <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill1/160/120'"/>
+            </button>
+            <button class="thumb" onclick="setThumb(this,'1530124566582-a618bc2615dc','drill2')" role="tab" aria-selected="false" aria-label="View image 2">
+              <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill2/160/120'"/>
+            </button>
+            <button class="thumb" onclick="setThumb(this,'1581244277943-fe4a9c777189','drill3')" role="tab" aria-selected="false" aria-label="View image 3">
+              <img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill3/160/120'"/>
+            </button>
+            <button class="thumb" onclick="setThumb(this,'1504917595217-d4dc5ebe6122','drill4')" role="tab" aria-selected="false" aria-label="View image 4">
+              <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill4/160/120'"/>
+            </button>
+          </div>
+        </div>
+
+        <div class="item-header">
+          <div class="cat-row">
+            <span class="badge badge-available">Available</span>
+            <span style="font-size:.8rem;color:var(--muted)">Construction</span>
+          </div>
+          <h1>Industrial Drill Press</h1>
+          <div class="rating"><em>★★★★★</em> 4.9 &nbsp;·&nbsp; 18 reviews &nbsp;·&nbsp; Listed 3 months ago</div>
+        </div>
+
+        <p class="item-desc">
+          A heavy-duty industrial drill press built for precision work in construction and metal fabrication.
+          Variable-speed motor, depth-locking handle, and a sturdy cast-iron base — ideal for short-term project rentals.
+          Cleaned and tested before each booking; includes 10 drill bits (3mm–25mm), safety guard, and a built-in work lamp.
+        </p>
+
+        <div class="item-specs">
+          <div class="spec"><div class="spec-lbl">Daily Rate</div><div class="spec-val cyan">₱850</div></div>
+          <div class="spec"><div class="spec-lbl">Security Deposit</div><div class="spec-val">₱2,500</div></div>
+          <div class="spec"><div class="spec-lbl">Min Rental</div><div class="spec-val">1 day</div></div>
+          <div class="spec"><div class="spec-lbl">Max Rental</div><div class="spec-val">30 days</div></div>
+        </div>
+
+        <div class="owner-box">
+          <div class="owner-av">MS</div>
+          <div class="owner-info">
+            <h4>Marco Santos</h4>
+            <p>Joined 2024 · 12 successful rentals · Verified</p>
+          </div>
+          <div class="owner-cta d-none d-sm-block">
+            <button class="btn btn-outline-cyan btn-sm">Message</button>
+          </div>
+        </div>
+
+        <div class="reviews-section">
+          <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:18px">Reviews <span style="color:var(--muted);font-weight:400;font-size:.95rem">(18)</span></h2>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer"><div class="rav">JD</div><div><h5>Juan D.</h5><p>2 weeks ago</p></div></div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">Excellent condition — worked exactly as described. Marco was responsive and pickup was smooth. Will rent again.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer"><div class="rav">RL</div><div><h5>Rea L.</h5><p>1 month ago</p></div></div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">Perfect for our workshop project. Deposit returned the same day after return. Highly recommend.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer"><div class="rav">MT</div><div><h5>Mike T.</h5><p>2 months ago</p></div></div>
+              <div class="stars">★★★★☆</div>
+            </div>
+            <p class="review-text">Solid machine throughout the rental. One bit was slightly worn but Marco offered a partial refund — fair and transparent.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col-lg-5">
+        <div class="booking-box">
+          <div class="price-big">₱850 <span>/ day</span></div>
+          <div class="dep">+ <strong>₱2,500</strong> refundable security deposit</div>
+
+          <form id="bookingForm" novalidate>
+            <div class="row g-2 mb-3">
+              <div class="col">
+                <label class="form-label" for="startDate">Start Date<span class="req">*</span></label>
+                <input id="startDate" type="date" class="form-control" required/>
+                <div class="invalid-feedback">Please pick a start date.</div>
+              </div>
+              <div class="col">
+                <label class="form-label" for="endDate">End Date<span class="req">*</span></label>
+                <input id="endDate" type="date" class="form-control" required/>
+                <div class="invalid-feedback">End date must be after start date.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="purpose">Purpose of Rental</label>
+              <select id="purpose" class="form-select">
+                <option value="">Select purpose...</option>
+                <option>Construction project</option>
+                <option>Workshop / DIY</option>
+                <option>Commercial use</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="notes">Notes for Owner</label>
+              <textarea id="notes" class="form-control" rows="3" placeholder="Any questions or special requirements..." maxlength="280"></textarea>
+              <div class="form-help"><span id="charCount">0</span>/280 characters</div>
+            </div>
+
+            <div class="booking-breakdown" id="breakdown" aria-live="polite">
+              <div class="bb-row"><span>₱850 × <span id="days">0</span> days</span><span>₱<span id="subtotal">0</span></span></div>
+              <div class="bb-row"><span>Platform fee (5%)</span><span>₱<span id="fee">0</span></span></div>
+              <div class="bb-row"><span>Security deposit</span><span>₱2,500</span></div>
+              <div class="bb-row total"><span>Total</span><span>₱<span id="total">2,500</span></span></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3">Request to Book</button>
+            <p class="booking-note">You won't be charged until the owner accepts. Deposit is held and released on return.</p>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Mobile sticky CTA -->
+<div class="mobile-cta">
+  <div class="mc-price">₱850<span> /day</span></div>
+  <button class="btn btn-primary" onclick="document.getElementById('startDate').focus();window.scrollTo({top:document.querySelector('.booking-box').offsetTop-80,behavior:'smooth'})">Book Now</button>
+</div>
+
+<footer class="tr-footer">
+  <div class="f-logo">T<em>0</em>kenRent</div>
+  <small>Blockchain-Based Smart Rental · Web Systems</small>
+  <div class="f-links">
+    <a href="index.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html">Login</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function setThumb(el, photoId, seed) {
+    document.querySelectorAll('.thumb').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    el.classList.add('active');
+    el.setAttribute('aria-selected','true');
+    const main = document.getElementById('mainImg');
+    main.onerror = () => { main.onerror = null; main.src = `https://picsum.photos/seed/${seed}/1200/800`; };
+    main.src = `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=1200&q=75`;
+  }
+
+  const DAILY = 850, DEPOSIT = 2500, FEE_PCT = 0.05;
+  const startEl = document.getElementById('startDate');
+  const endEl = document.getElementById('endDate');
+  const today = new Date().toISOString().split('T')[0];
+  startEl.min = today; endEl.min = today;
+
+  function calc() {
+    if (!startEl.value || !endEl.value) {
+      document.getElementById('days').textContent = '0';
+      document.getElementById('subtotal').textContent = '0';
+      document.getElementById('fee').textContent = '0';
+      document.getElementById('total').textContent = '2,500';
+      return;
+    }
+    const s = new Date(startEl.value), e = new Date(endEl.value);
+    const days = Math.max(0, Math.round((e - s) / 86400000));
+    const subtotal = days * DAILY;
+    const fee = Math.round(subtotal * FEE_PCT);
+    const total = subtotal + fee + DEPOSIT;
+    document.getElementById('days').textContent = days;
+    document.getElementById('subtotal').textContent = subtotal.toLocaleString();
+    document.getElementById('fee').textContent = fee.toLocaleString();
+    document.getElementById('total').textContent = total.toLocaleString();
+  }
+  startEl.addEventListener('change', () => { endEl.min = startEl.value || today; calc(); });
+  endEl.addEventListener('change', calc);
+
+  const notes = document.getElementById('notes');
+  const charCount = document.getElementById('charCount');
+  notes.addEventListener('input', () => charCount.textContent = notes.value.length);
+
+  document.getElementById('bookingForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let valid = true;
+    if (!startEl.value) { startEl.classList.add('is-invalid'); valid = false; }
+    else startEl.classList.remove('is-invalid');
+    if (!endEl.value || new Date(endEl.value) <= new Date(startEl.value)) {
+      endEl.classList.add('is-invalid'); valid = false;
+    } else endEl.classList.remove('is-invalid');
+
+    if (valid) alert('Booking request submitted! The owner will review and confirm.');
+  });
+
+  function toggleNav(btn){
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    btn.textContent = open ? '✕' : '☰';
+  }
+</script>
+
+</body>
+</html>

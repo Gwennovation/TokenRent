@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="T0kenRent — a blockchain-based smart peer-to-peer equipment rental platform. Transparent, automated, and fully trackable."/>
+  <title>T0kenRent — Smart Peer-to-Peer Equipment Rental</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <!-- Shared design system -->
+  <link rel="stylesheet" href="shared.css"/>
+
+  <style>
+    /* Landing-only styles */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 20px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .g1 { width:560px; height:560px; background:rgba(168,85,247,.20); top:-160px; left:-140px; }
+    .g2 { width:480px; height:480px; background:rgba(0,200,255,.16); bottom:-60px; right:-100px; }
+    .g3 { width:340px; height:340px; background:rgba(233,30,140,.13); bottom:80px; left:35%; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--purple-10);
+      border: 1px solid rgba(168,85,247,.3);
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: .75rem; color: #C084FC;
+      font-weight: 600; letter-spacing: .05em;
+      margin-bottom: 28px;
+      animation: fadeUp .6s .1s both;
+    }
+    .hero-badge i { width:6px; height:6px; border-radius:50%; background:var(--purple); animation:pulse 2s infinite; }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.6rem, 7vw, 5.6rem);
+      line-height: 1.04;
+      letter-spacing: -2px;
+      margin-bottom: 22px;
+      animation: fadeUp .7s .2s both;
+    }
+    .hero p.lead {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 300;
+      margin: 0 auto 36px;
+      animation: fadeUp .7s .3s both;
+    }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; animation: fadeUp .7s .4s both; }
+    .hero-stats { display:flex; gap:52px; margin-top:60px; justify-content:center; flex-wrap:wrap; animation: fadeUp .7s .5s both; }
+    .stat-num { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .stat-lbl { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+
+    /* Showcase strip — equipment imagery below hero */
+    .showcase {
+      padding: 30px clamp(20px, 4vw, 56px) 80px;
+      position: relative;
+    }
+    .showcase-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .showcase-tile {
+      aspect-ratio: 3/4;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      animation: fadeUp .8s both;
+    }
+    .showcase-tile:nth-child(1) { animation-delay: .55s; }
+    .showcase-tile:nth-child(2) { animation-delay: .65s; }
+    .showcase-tile:nth-child(3) { animation-delay: .75s; }
+    .showcase-tile:nth-child(4) { animation-delay: .85s; }
+    .showcase-tile img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .6s ease;
+    }
+    .showcase-tile:hover img { transform: scale(1.08); }
+    .showcase-tile::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(11,11,18,.85) 100%);
+      pointer-events: none;
+    }
+    .showcase-tile .tile-label {
+      position: absolute;
+      bottom: 16px; left: 16px; right: 16px;
+      z-index: 2;
+    }
+    .showcase-tile .tile-cat {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+    .showcase-tile .tile-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--white);
+    }
+    @media (max-width: 900px) { .showcase-strip { grid-template-columns: 1fr 1fr; } }
+
+    .section { padding: 92px clamp(20px, 4vw, 56px); position: relative; }
+
+    /* How it works */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+      background: rgba(0,200,255,.06);
+      border: 1px solid rgba(0,200,255,.08);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .how-step { background: var(--bg-card); padding: 32px 26px; transition: background .25s; }
+    .how-step:hover { background: var(--bg-surface); }
+    .how-num { font-family: 'Syne', sans-serif; font-size: 2.6rem; font-weight: 800; line-height: 1; margin-bottom: 14px; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: .55; }
+    .how-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .how-step p  { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+    /* Problems */
+    .prob-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(233,30,140,.12);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: transform .25s, border-color .25s;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .prob-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--pink), transparent);
+    }
+    .prob-card:hover { transform: translateY(-4px); border-color: rgba(233,30,140,.35); }
+    .prob-icon { font-size: 1.7rem; margin-bottom: 12px; }
+    .prob-card h3 { font-size: .98rem; margin-bottom: 6px; }
+    .prob-card p  { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+    /* Features */
+    .feat-card {
+      background: linear-gradient(160deg, var(--bg-card) 60%, var(--bg-surface) 100%);
+      border: 1px solid rgba(0,200,255,.09);
+      border-radius: 20px;
+      padding: 30px;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    .feat-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 20%, rgba(0,200,255,.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .feat-card:hover { transform: translateY(-5px); border-color: rgba(0,200,255,.3); box-shadow: var(--shadow-pop); }
+    .feat-n { font-family: 'Syne', sans-serif; font-size: .65rem; font-weight: 800; letter-spacing: .12em; color: var(--cyan); opacity: .8; margin-bottom: 12px; }
+    .feat-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    .feat-card p  { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+    .feat-tag {
+      display: inline-block; margin-top: 16px;
+      padding: 4px 12px; border-radius: 99px;
+      background: var(--cyan-10);
+      border: 1px solid var(--cyan-20);
+      font-size: .7rem; color: var(--cyan);
+      font-weight: 700; letter-spacing: .04em;
+    }
+
+    /* Stack */
+    .stack-section { background: var(--bg-subtle); }
+    .stack-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(168,85,247,.10);
+      border-radius: 14px;
+      padding: 22px 16px;
+      text-align: center;
+      transition: transform .2s, border-color .2s;
+      height: 100%;
+    }
+    .stack-card:hover { transform: translateY(-3px); border-color: rgba(168,85,247,.35); }
+    .stack-card .si { font-size: 1.85rem; margin-bottom: 10px; }
+    .stack-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: 3px; }
+    .stack-card p  { font-size: .72rem; color: var(--muted); }
+
+    /* Team */
+    .team-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      text-align: center;
+      transition: transform .2s;
+      height: 100%;
+    }
+    .team-card:hover { transform: translateY(-4px); }
+    .av {
+      width: 60px; height: 60px;
+      border-radius: 50%; margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800;
+      font-family: 'Syne', sans-serif;
+    }
+    .av-c { background: var(--cyan-10);   border: 2px solid var(--cyan);   color: var(--cyan); }
+    .av-p { background: var(--purple-10); border: 2px solid var(--purple); color: #C084FC; }
+    .av-k { background: var(--pink-10);   border: 2px solid var(--pink);   color: #F472B6; }
+    .team-card h4 { font-size: .92rem; margin-bottom: 4px; }
+    .team-card p  { font-size: .75rem; color: var(--muted); }
+
+    /* CTA band */
+    .cta-band {
+      text-align: center;
+      padding: 100px clamp(20px, 4vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-band::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168,85,247,.13) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cta-band h2 { font-size: clamp(1.9rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -1.3px; margin-bottom: 16px; position: relative; }
+    .cta-band p  { color: var(--muted); max-width: 460px; margin: 0 auto 32px; position: relative; font-weight: 300; }
+
+    @media (max-width: 768px) {
+      .hero-stats { gap: 32px; margin-top: 44px; }
+      .section { padding: 64px 20px; }
+      .cta-band { padding: 72px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="tr-nav">
+  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks" onclick="toggleNav(this)">☰</button>
+  <div class="nav-links ms-auto" id="navLinks">
+    <a href="index.html" class="active">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" class="nav-cta">Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero page">
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+
+  <div class="hero-badge"><i></i> Blockchain-Based Smart Rental · Web Systems Project</div>
+  <h1>Rent Smarter.<br/><span class="g-text">Trustless &amp; Transparent.</span></h1>
+  <p class="lead">A peer-to-peer equipment rental platform that eliminates informal arrangements — centralized, automated, and fully trackable.</p>
+
+  <div class="hero-ctas">
+    <a href="browse.html" class="btn btn-primary px-4 py-3">Browse Equipment</a>
+    <a href="list-item.html" class="btn btn-outline-cyan px-4 py-3">List Your Item</a>
+  </div>
+
+  <div class="hero-stats">
+    <div><div class="stat-num">5</div><div class="stat-lbl">Team Members</div></div>
+    <div><div class="stat-num">100%</div><div class="stat-lbl">Responsive</div></div>
+    <div><div class="stat-num">0</div><div class="stat-lbl">Hidden Fees</div></div>
+  </div>
+</header>
+
+<!-- Showcase strip -->
+<section class="showcase" aria-label="Equipment categories">
+  <div class="showcase-strip">
+    <a href="browse.html?cat=construction" class="showcase-tile">
+      <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=600&q=70" alt="Construction tools" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/construction/600/800'"/>
+      <div class="tile-label"><div class="tile-cat">Construction</div><div class="tile-name">Drills · Welders · Generators</div></div>
+    </a>
+    <a href="browse.html?cat=photography" class="showcase-tile">
+      <img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=70" alt="Photography gear" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/photography/600/800'"/>
+      <div class="tile-label"><div class="tile-cat">Photography</div><div class="tile-name">DSLRs · Drones · Lenses</div></div>
+    </a>
+    <a href="browse.html?cat=outdoor" class="showcase-tile">
+      <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=600&q=70" alt="Outdoor gear" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/outdoor/600/800'"/>
+      <div class="tile-label"><div class="tile-cat">Outdoor</div><div class="tile-name">Tents · Bikes · Kayaks</div></div>
+    </a>
+    <a href="browse.html?cat=events" class="showcase-tile">
+      <img src="https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=70" alt="Event gear" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/events/600/800'"/>
+      <div class="tile-label"><div class="tile-cat">Events</div><div class="tile-name">Speakers · Lights · Tables</div></div>
+    </a>
+  </div>
+</section>
+
+<div class="divider" style="margin: 0 clamp(20px,4vw,56px);"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="container-fluid p-0">
+    <div class="sec-head">
+      <div class="sec-label">How It Works</div>
+      <h2 class="sec-title">Simple. Transparent. Automated.</h2>
+      <p class="sec-sub">From listing to return — every step is tracked on the platform with no manual paperwork.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step"><div class="how-num">01</div><h3>Create an Account</h3><p>Register as an owner, a renter, or both. Your profile tracks all activity in one dashboard.</p></div>
+      <div class="how-step"><div class="how-num">02</div><h3>Browse or List</h3><p>Owners list equipment with photos, pricing, and availability. Renters search and filter by category.</p></div>
+      <div class="how-step"><div class="how-num">03</div><h3>Book &amp; Confirm</h3><p>Submit a booking request. Terms are locked in — fees, deposit, and duration are crystal clear.</p></div>
+      <div class="how-step"><div class="how-num">04</div><h3>Deposit Held</h3><p>A security deposit is tracked automatically. No manual chasing, no disputes over amounts.</p></div>
+      <div class="how-step"><div class="how-num">05</div><h3>Track &amp; Return</h3><p>Due dates and overdue flags are handled by the system with clear status updates throughout.</p></div>
+      <div class="how-step"><div class="how-num">06</div><h3>Release &amp; Review</h3><p>On return, the deposit is released and the transaction closes cleanly — logged on your history.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="margin: 0 clamp(20px,4vw,56px);"></div>
+
+<!-- PROBLEM -->
+<section class="section bg-subtle">
+  <div class="sec-head">
+    <div class="sec-label pink">Problem Statement</div>
+    <h2 class="sec-title">Why T0kenRent needs to exist</h2>
+    <p class="sec-sub">Informal equipment rental is broken. Here's what the platform fixes.</p>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6 col-xl-3"><div class="prob-card"><div class="prob-icon">🗂️</div><h3>No Centralized Platform</h3><p>Listings, availability, and user records are scattered across chats and papers — no single place to manage them.</p></div></div>
+    <div class="col-md-6 col-xl-3"><div class="prob-card"><div class="prob-icon">📝</div><h3>Informal Agreements</h3><p>Verbal or handwritten contracts lead to misunderstandings over fees, duration, and item condition.</p></div></div>
+    <div class="col-md-6 col-xl-3"><div class="prob-card"><div class="prob-icon">⚙️</div><h3>Zero Automation</h3><p>Due dates, deposits, and late penalties are all tracked manually — the biggest source of disputes between parties.</p></div></div>
+    <div class="col-md-6 col-xl-3"><div class="prob-card"><div class="prob-icon">🔒</div><h3>Lack of Trust</h3><p>Without a structured system, both owners and renters hesitate to engage in peer-to-peer equipment sharing.</p></div></div>
+  </div>
+</section>
+
+<div class="divider" style="margin: 0 clamp(20px,4vw,56px);"></div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="sec-head">
+    <div class="sec-label">Key Features</div>
+    <h2 class="sec-title">Everything the platform includes</h2>
+    <p class="sec-sub">Five application pages — each designed for a specific job.</p>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 01</div><h3>Browse &amp; Search</h3><p>Grid view of available items with live search, category filters, and status badges (Available / Rented / Overdue).</p><span class="feat-tag">Filter · Search · Grid</span></div></div>
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 02</div><h3>Item Detail</h3><p>Full item view — photo gallery, rental fee, deposit amount, owner profile, and a booking request form.</p><span class="feat-tag">Booking · Photos · Owner</span></div></div>
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 03</div><h3>List an Item</h3><p>Owner-facing upload form: title, description, category, pricing, deposit, and availability calendar.</p><span class="feat-tag">Upload · Pricing · Dates</span></div></div>
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 04</div><h3>User Dashboard</h3><p>Central hub showing active rentals, pending requests, transaction history, and item status at a glance.</p><span class="feat-tag">Overview · History · Status</span></div></div>
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 05</div><h3>Login / Register</h3><p>Authentication UI supporting both account creation and sign-in with clean form validation flows.</p><span class="feat-tag">Auth · Validation · UX</span></div></div>
+    <div class="col-md-6 col-lg-4"><div class="feat-card"><div class="feat-n">PAGE 06</div><h3>Responsive Design</h3><p>Bootstrap 5 grid &amp; utilities ensure a fully adaptive layout across desktop, tablet, and mobile.</p><span class="feat-tag">Mobile-First · Adaptive</span></div></div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section class="section stack-section" id="stack">
+  <div class="sec-head">
+    <div class="sec-label purple">Technology Stack</div>
+    <h2 class="sec-title">Tools &amp; Technologies</h2>
+    <p class="sec-sub">Built with proven, modern web technologies and developer tooling.</p>
+  </div>
+  <div class="row g-2">
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🧱</div><h4>HTML5</h4><p>Semantic markup</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🎨</div><h4>CSS3</h4><p>Custom styles &amp; animations</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">⚡</div><h4>JavaScript</h4><p>DOM, filtering, validation</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🅱️</div><h4>Bootstrap 5</h4><p>Mobile-first grid</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🖥️</div><h4>VS Code</h4><p>Primary IDE</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🐙</div><h4>Git / GitHub</h4><p>Version control</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🎭</div><h4>Figma</h4><p>UI &amp; wireframes</p></div></div>
+    <div class="col-6 col-md-3 col-lg"><div class="stack-card"><div class="si">🚀</div><h4>Vercel</h4><p>Deployment</p></div></div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" id="team">
+  <div class="sec-head">
+    <div class="sec-label">The Team</div>
+    <h2 class="sec-title">5 Members · Web Systems</h2>
+    <p class="sec-sub">A group of five developers building the full front-end stack together.</p>
+  </div>
+  <div class="row g-3 justify-content-center">
+    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-c">LD</div><h4>Leiana Dilag</h4><p>Web Systems</p></div></div>
+    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-p">SP</div><h4>Shesly-Jhaey Peregrina</h4><p>Web Systems</p></div></div>
+    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-k">GM</div><h4>Gwyneth Manalo</h4><p>Web Systems</p></div></div>
+    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-c">IQ</div><h4>Isaac Quicho</h4><p>Web Systems</p></div></div>
+    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-p">CV</div><h4>Cyrus Vibal</h4><p>Web Systems</p></div></div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2>Ready to <span class="g-text">rent smarter?</span></h2>
+  <p>Join T0kenRent and experience a transparent, automated peer-to-peer equipment marketplace.</p>
+  <div class="d-flex gap-3 justify-content-center flex-wrap">
+    <a href="browse.html" class="btn btn-primary px-4 py-3">Browse Equipment</a>
+    <a href="login.html" class="btn btn-outline-cyan px-4 py-3">Create Account</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="tr-footer">
+  <div class="f-logo">T<em>0</em>kenRent</div>
+  <small>Blockchain-Based Smart Rental · Web Systems · HTML · CSS · JS · Bootstrap 5</small>
+  <div class="f-links">
+    <a href="browse.html">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html">Login</a>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleNav(btn){
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    btn.textContent = open ? '✕' : '☰';
+  }
+  // Close mobile nav when a link is clicked
+  document.querySelectorAll('#navLinks a').forEach(a => {
+    a.addEventListener('click', () => {
+      const links = document.getElementById('navLinks');
+      const btn = document.querySelector('.nav-toggle');
+      if (links.classList.contains('open')) {
+        links.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = '☰';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
