@@ -80,7 +80,8 @@
     }
     .d-nav:hover { background: rgba(255,255,255,.04); color: var(--white); }
     .d-nav.active { background: var(--cyan-10); color: var(--cyan); }
-    .d-nav .ico { font-size: 1rem; width: 20px; text-align: center; }
+    .d-nav .ico { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .d-nav .ico svg { display: block; }
     .d-nav .badge-count {
       margin-left: auto;
       background: var(--pink);
@@ -106,12 +107,17 @@
     .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border-soft);
+      border-top-width: 2px;
       border-radius: 14px;
       padding: 20px;
-      transition: transform .2s;
+      transition: transform .2s, box-shadow .2s;
       height: 100%;
     }
-    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
+    .stat-card.s-cyan   { border-top-color: var(--cyan); }
+    .stat-card.s-purple { border-top-color: var(--purple); }
+    .stat-card.s-pink   { border-top-color: var(--pink); }
+    .stat-card.s-green  { border-top-color: var(--success); }
     .stat-card .s-label {
       font-size: .68rem;
       text-transform: uppercase;
@@ -126,11 +132,8 @@
       font-size: 2rem;
       margin-bottom: 2px;
       line-height: 1.1;
+      color: var(--white);
     }
-    .stat-card .s-val.c { color: var(--cyan); }
-    .stat-card .s-val.p { color: #C084FC; }
-    .stat-card .s-val.k { color: #F472B6; }
-    .stat-card .s-val.g { color: var(--success); }
     .stat-card .s-delta { font-size: .72rem; color: var(--muted); }
 
     /* Table block */
@@ -235,28 +238,52 @@
     <!-- SIDEBAR -->
     <aside class="dash-side" id="dashSide" aria-label="Dashboard navigation">
       <div class="user-card">
-        <div class="user-av">IQ</div>
+        <div class="user-av" id="sideUserAv">—</div>
         <div class="user-info">
-          <h4>Isaac Q.</h4>
-          <p>Owner + Renter</p>
+          <h4 id="sideUserName">Loading…</h4>
+          <p id="sideUserRole">Member</p>
         </div>
       </div>
 
       <div class="dash-nav-section">Overview</div>
-      <button class="d-nav active" onclick="showTab('overview',this)"><span class="ico">📊</span> Dashboard</button>
-      <button class="d-nav" onclick="showTab('rentals',this)"><span class="ico">🔁</span> My Rentals <span class="badge-count">3</span></button>
-      <button class="d-nav" onclick="showTab('requests',this)"><span class="ico">📥</span> Pending Requests <span class="badge-count">2</span></button>
+      <button class="d-nav active" onclick="showTab('overview',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+        Dashboard
+      </button>
+      <button class="d-nav" onclick="showTab('rentals',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+        My Rentals <span class="badge-count" id="navBadgeRentals"></span>
+      </button>
+      <button class="d-nav" onclick="showTab('requests',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
+        Pending <span class="badge-count" id="navBadgeRequests"></span>
+      </button>
 
       <div class="dash-nav-section">Listings</div>
-      <button class="d-nav" onclick="showTab('items',this)"><span class="ico">📦</span> My Items</button>
-      <button class="d-nav" onclick="location.href='list-item.html'"><span class="ico">➕</span> List New Item</button>
+      <button class="d-nav" onclick="showTab('items',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+        My Items
+      </button>
+      <button class="d-nav" onclick="location.href='list-item.html'">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>
+        List New Item
+      </button>
 
       <div class="dash-nav-section">Activity</div>
-      <button class="d-nav" onclick="showTab('history',this)"><span class="ico">📜</span> History</button>
-      <button class="d-nav" onclick="showTab('messages',this)"><span class="ico">💬</span> Messages</button>
+      <button class="d-nav" onclick="showTab('history',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+        History
+      </button>
+      <button class="d-nav" onclick="showTab('messages',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        Messages
+      </button>
 
       <div class="dash-nav-section">Account</div>
-      <button class="d-nav" onclick="showTab('settings',this)"><span class="ico">⚙️</span> Settings</button>
+      <button class="d-nav" onclick="showTab('settings',this)">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
+        Settings
+      </button>
     </aside>
 
     <!-- MAIN -->
@@ -278,16 +305,32 @@
         <!-- Stats -->
         <div class="row g-3 mb-3">
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Active Rentals</div><div class="s-val c" id="statActive">—</div><div class="s-delta">Across both roles</div></div>
+            <div class="stat-card s-cyan">
+              <div class="s-label">Active Rentals</div>
+              <div class="s-val" id="statActive">—</div>
+              <div class="s-delta">Across both roles</div>
+            </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Pending Requests</div><div class="s-val p" id="statPending">—</div><div class="s-delta">Needs your review</div></div>
+            <div class="stat-card s-purple">
+              <div class="s-label">Pending Requests</div>
+              <div class="s-val" id="statPending">—</div>
+              <div class="s-delta">Needs your review</div>
+            </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Overdue Items</div><div class="s-val k" id="statOverdue">—</div><div class="s-delta">⚠ Follow up needed</div></div>
+            <div class="stat-card s-pink">
+              <div class="s-label">Overdue Items</div>
+              <div class="s-val" id="statOverdue">—</div>
+              <div class="s-delta">Follow up needed</div>
+            </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">This Month (₱)</div><div class="s-val g" id="statSpend">—</div><div class="s-delta">Booking total</div></div>
+            <div class="stat-card s-green">
+              <div class="s-label">This Month (₱)</div>
+              <div class="s-val" id="statSpend">—</div>
+              <div class="s-delta">Booking total</div>
+            </div>
           </div>
         </div>
 
@@ -467,7 +510,8 @@
       document.getElementById('statPending').textContent = d.pendingRequests;
       document.getElementById('statOverdue').textContent = d.overdue;
       document.getElementById('statSpend').textContent   = (d.monthSpend || 0).toLocaleString();
-    } catch (e) { /* leave dashes */ }
+      return d;
+    } catch (e) { return null; }
   }
 
   async function fetchRentals(as, status) {
@@ -599,13 +643,26 @@
 
   // ─── Initial load + greet ───────────────────────────────────────────
   (async function init() {
-    await Auth.ready();
-    if (Auth.isAuthed()) {
-      const u = Auth.get();
+    const u = await Auth.ready();
+    if (u) {
       window._me = u._id;
+
+      // Greet with time of day
+      const hour = new Date().getHours();
+      const tod  = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+      const name = Auth.displayName();
       const greet = document.querySelector('.greet h2');
-      if (greet) greet.innerHTML = `Welcome back, ${u.name || u.handcashHandle || (u.email || '').split('@')[0]} `;
-      loadStats();
+      if (greet) greet.textContent = `${tod}, ${name}`;
+
+      // Update nav badge counts after stats load
+      loadStats().then(stats => {
+        if (stats) {
+          const br = document.getElementById('navBadgeRentals');
+          const bp = document.getElementById('navBadgeRequests');
+          if (br && stats.activeRentals > 0) br.textContent = stats.activeRentals;
+          if (bp && stats.pendingRequests > 0) bp.textContent = stats.pendingRequests;
+        }
+      });
       loadOverview();
     }
   })();

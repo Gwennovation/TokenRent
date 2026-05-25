@@ -80,12 +80,8 @@ h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; font-weight: 700; letter-spaci
 p { margin: 0; }
 
 /* Helpers */
-.g-text {
-  background: var(--grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* .g-text: was gradient text (banned). Now solid cyan accent — emphasis via color, not clip. */
+.g-text { color: var(--cyan); }
 .text-muted-soft { color: var(--muted) !important; }
 .bg-deep   { background: var(--bg-deep) !important; }
 .bg-subtle { background: var(--bg-subtle) !important; }
@@ -147,6 +143,67 @@ p { margin: 0; }
 .nav-cta:hover { opacity: .9; transform: translateY(-1px); color: var(--bg-deep) !important; }
 .nav-cta::after { display: none !important; }
 
+/* Auth-aware nav: user pill (replaces Login when signed in) */
+.nav-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,200,255,.07);
+  border: 1px solid rgba(0,200,255,.18);
+  border-radius: 99px;
+  padding: 4px 10px 4px 4px;
+}
+.nav-av {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(0,200,255,.12);
+  border: 1.5px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: .65rem;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+.nav-user-name {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--white);
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-admin-badge {
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--purple);
+  background: var(--purple-10);
+  border: 1px solid rgba(168,85,247,.3);
+  border-radius: 99px;
+  padding: 2px 8px;
+}
+.nav-logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 99px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.4;
+}
+.nav-logout-btn:hover {
+  color: var(--white);
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.04);
+}
+
 /* Mobile menu */
 .nav-toggle {
   display: none;
@@ -181,6 +238,7 @@ p { margin: 0; }
   .nav-links a.active::after { display: none; }
   .nav-links a.active { color: var(--cyan); }
   .nav-cta { text-align: center; margin-top: 8px; }
+  .nav-user-pill { margin-top: 8px; border-radius: 10px; padding: 10px 14px; justify-content: flex-start; }
   .nav-toggle { display: inline-flex; align-items: center; }
 }
 

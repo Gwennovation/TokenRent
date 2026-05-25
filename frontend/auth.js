@@ -81,4 +81,39 @@ const Auth = {
 window.Auth = Auth;
 window.API  = API;
 
-document.addEventListener('DOMContentLoaded', () => Auth.refresh());
+/* ===================================================================
+   Nav updater — runs after every auth check.
+   Replaces the Login CTA with a user pill when signed in.
+   Also hydrates the dashboard sidebar user card if present.
+   =================================================================== */
+function _updateNav(user) {
+  // ── Top nav: swap Login for user pill ────────────────────────────
+  const cta = document.querySelector('.nav-links .nav-cta');
+  if (cta && user) {
+    const name     = Auth.displayName();
+    const initials = name.slice(0, 2).toUpperCase();
+    const isAdmin  = user.role === 'admin';
+
+    const pill = document.createElement('div');
+    pill.className = 'nav-user-pill';
+    pill.innerHTML =
+      `<div class="nav-av">${initials}</div>` +
+      `<span class="nav-user-name">${name}</span>` +
+      (isAdmin ? `<span class="nav-admin-badge">Admin</span>` : '') +
+      `<button class="nav-logout-btn" onclick="Auth.signOut()">Sign Out</button>`;
+    cta.replaceWith(pill);
+  }
+
+  // ── Dashboard sidebar user card ────────────────────────────────
+  const sideAv   = document.getElementById('sideUserAv');
+  const sideName = document.getElementById('sideUserName');
+  const sideRole = document.getElementById('sideUserRole');
+  if (sideAv && user) {
+    const name = Auth.displayName();
+    sideAv.textContent = name.slice(0, 2).toUpperCase();
+    if (sideName) sideName.textContent = name;
+    if (sideRole) sideRole.textContent = user.role === 'admin' ? 'Admin' : 'Owner + Renter';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => Auth.refresh().then(_updateNav));
