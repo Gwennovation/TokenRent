@@ -177,65 +177,46 @@
     <nav class="breadcrumb-bar" aria-label="Breadcrumb">
       <a href="browse.html">Browse</a>
       <span class="sep">/</span>
-      <a href="browse.html?cat=construction">Construction</a>
+      <a id="bcCat" href="browse.html">—</a>
       <span class="sep">/</span>
-      <span class="current">Industrial Drill Press</span>
+      <span class="current" id="bcTitle">Loading…</span>
     </nav>
 
-    <div class="row g-4">
+    <div class="row g-4" id="detailGrid">
 
       <!-- LEFT -->
       <div class="col-lg-7">
 
         <div class="gallery">
           <div class="gallery-main" aria-label="Main image">
-            <img id="mainImg" src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=1200&q=75"
-                 alt="Industrial Drill Press"
-                 onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill1/1200/800'"/>
+            <img id="mainImg" src="" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/item/1200/800'"/>
           </div>
-          <div class="gallery-thumbs" role="tablist" aria-label="Image thumbnails">
-            <button class="thumb active" onclick="setThumb(this,'1572981779307-38b8cabb2407','drill1')" role="tab" aria-selected="true" aria-label="View image 1">
-              <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill1/160/120'"/>
-            </button>
-            <button class="thumb" onclick="setThumb(this,'1530124566582-a618bc2615dc','drill2')" role="tab" aria-selected="false" aria-label="View image 2">
-              <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill2/160/120'"/>
-            </button>
-            <button class="thumb" onclick="setThumb(this,'1581244277943-fe4a9c777189','drill3')" role="tab" aria-selected="false" aria-label="View image 3">
-              <img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill3/160/120'"/>
-            </button>
-            <button class="thumb" onclick="setThumb(this,'1504917595217-d4dc5ebe6122','drill4')" role="tab" aria-selected="false" aria-label="View image 4">
-              <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=160&q=60" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill4/160/120'"/>
-            </button>
-          </div>
+          <div class="gallery-thumbs" role="tablist" aria-label="Image thumbnails" id="galleryThumbs"></div>
         </div>
 
         <div class="item-header">
           <div class="cat-row">
-            <span class="badge badge-available">Available</span>
-            <span style="font-size:.8rem;color:var(--muted)">Construction</span>
+            <span id="itemStatus" class="badge badge-available">Available</span>
+            <span id="itemCat" style="font-size:.8rem;color:var(--muted)">—</span>
           </div>
-          <h1>Industrial Drill Press</h1>
-          <div class="rating"><em>★★★★★</em> 4.9 &nbsp;·&nbsp; 18 reviews &nbsp;·&nbsp; Listed 3 months ago</div>
+          <h1 id="itemTitle">Loading…</h1>
+          <div class="rating"><em id="itemStars">★★★★★</em> <span id="itemRating">—</span> &nbsp;·&nbsp; <span id="itemReviewCount">0</span> reviews &nbsp;·&nbsp; Listed <span id="itemListedAgo">—</span></div>
         </div>
 
-        <p class="item-desc">
-          A heavy-duty industrial drill press built for precision work in construction and metal fabrication.
-          Variable-speed motor, depth-locking handle, and a sturdy cast-iron base — ideal for short-term project rentals.
-          Cleaned and tested before each booking; includes 10 drill bits (3mm–25mm), safety guard, and a built-in work lamp.
-        </p>
+        <p class="item-desc" id="itemDesc">Loading description…</p>
 
         <div class="item-specs">
-          <div class="spec"><div class="spec-lbl">Daily Rate</div><div class="spec-val cyan">₱850</div></div>
-          <div class="spec"><div class="spec-lbl">Security Deposit</div><div class="spec-val">₱2,500</div></div>
-          <div class="spec"><div class="spec-lbl">Min Rental</div><div class="spec-val">1 day</div></div>
-          <div class="spec"><div class="spec-lbl">Max Rental</div><div class="spec-val">30 days</div></div>
+          <div class="spec"><div class="spec-lbl">Daily Rate</div><div class="spec-val cyan" id="specRate">—</div></div>
+          <div class="spec"><div class="spec-lbl">Security Deposit</div><div class="spec-val" id="specDeposit">—</div></div>
+          <div class="spec"><div class="spec-lbl">Min Rental</div><div class="spec-val" id="specMin">—</div></div>
+          <div class="spec"><div class="spec-lbl">Max Rental</div><div class="spec-val" id="specMax">—</div></div>
         </div>
 
         <div class="owner-box">
-          <div class="owner-av">MS</div>
+          <div class="owner-av" id="ownerAvatar">—</div>
           <div class="owner-info">
-            <h4>Marco Santos</h4>
-            <p>Joined 2024 · 12 successful rentals · Verified</p>
+            <h4 id="ownerName">—</h4>
+            <p id="ownerMeta">—</p>
           </div>
           <div class="owner-cta d-none d-sm-block">
             <button class="btn btn-outline-cyan btn-sm">Message</button>
@@ -243,30 +224,12 @@
         </div>
 
         <div class="reviews-section">
-          <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:18px">Reviews <span style="color:var(--muted);font-weight:400;font-size:.95rem">(18)</span></h2>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div class="reviewer"><div class="rav">JD</div><div><h5>Juan D.</h5><p>2 weeks ago</p></div></div>
-              <div class="stars">★★★★★</div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:18px">Reviews <span style="color:var(--muted);font-weight:400;font-size:.95rem">(<span id="reviewsCount">0</span>)</span></h2>
+          <div id="reviewsList">
+            <div class="empty-state" style="padding:30px 20px">
+              <div class="icon">📝</div>
+              <p style="font-size:.85rem">No reviews yet. Be the first to rent this item.</p>
             </div>
-            <p class="review-text">Excellent condition — worked exactly as described. Marco was responsive and pickup was smooth. Will rent again.</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div class="reviewer"><div class="rav">RL</div><div><h5>Rea L.</h5><p>1 month ago</p></div></div>
-              <div class="stars">★★★★★</div>
-            </div>
-            <p class="review-text">Perfect for our workshop project. Deposit returned the same day after return. Highly recommend.</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div class="reviewer"><div class="rav">MT</div><div><h5>Mike T.</h5><p>2 months ago</p></div></div>
-              <div class="stars">★★★★☆</div>
-            </div>
-            <p class="review-text">Solid machine throughout the rental. One bit was slightly worn but Marco offered a partial refund — fair and transparent.</p>
           </div>
         </div>
 
@@ -275,8 +238,8 @@
       <!-- RIGHT -->
       <div class="col-lg-5">
         <div class="booking-box">
-          <div class="price-big">₱850 <span>/ day</span></div>
-          <div class="dep">+ <strong>₱2,500</strong> refundable security deposit</div>
+          <div class="price-big"><span id="priceBig">—</span> <span>/ day</span></div>
+          <div class="dep">+ <strong id="depositBig">—</strong> refundable security deposit</div>
 
           <form id="bookingForm" novalidate>
             <div class="row g-2 mb-3">
@@ -328,7 +291,7 @@
 
 <!-- Mobile sticky CTA -->
 <div class="mobile-cta">
-  <div class="mc-price">₱850<span> /day</span></div>
+  <div class="mc-price"><span id="mcPrice">—</span><span> /day</span></div>
   <button class="btn btn-primary" onclick="document.getElementById('startDate').focus();window.scrollTo({top:document.querySelector('.booking-box').offsetTop-80,behavior:'smooth'})">Book Now</button>
 </div>
 
@@ -347,38 +310,166 @@
 <script src="auth.js"></script>
 <script src="auth-gate.js"></script>
 <script>
-  function setThumb(el, photoId, seed) {
+  const FEE_PCT = 0.05;
+  let CURRENT_ITEM = null;
+
+  /* ─── Boot: fetch item from URL ?id= ──────────────────────────────── */
+  function getItemId() {
+    return new URLSearchParams(window.location.search).get('id');
+  }
+
+  async function bootItem() {
+    const id = getItemId();
+    if (!id) {
+      document.getElementById('detailGrid').innerHTML = `
+        <div class="empty-state" style="margin:60px auto;max-width:480px">
+          <div class="icon">📦</div>
+          <h3>No item selected</h3>
+          <p>Head back to Browse to pick something to rent.</p>
+          <a href="browse.html" class="btn btn-primary px-4">← Browse Equipment</a>
+        </div>`;
+      return;
+    }
+    try {
+      const r = await fetch('/api/items/' + encodeURIComponent(id), { credentials: 'include' });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Item not found');
+      CURRENT_ITEM = data.item;
+      hydrate(data.item);
+    } catch (err) {
+      document.getElementById('detailGrid').innerHTML = `
+        <div class="empty-state" style="margin:60px auto;max-width:480px">
+          <div class="icon">⚠️</div>
+          <h3>Item not available</h3>
+          <p>${err.message}</p>
+          <a href="browse.html" class="btn btn-primary px-4">← Browse Equipment</a>
+        </div>`;
+    }
+  }
+
+  function hydrate(it) {
+    // Breadcrumb + title
+    document.title = it.title + ' — T0kenRent';
+    document.getElementById('bcTitle').textContent = it.title;
+    document.getElementById('bcCat').textContent = it.category;
+    document.getElementById('bcCat').href = 'browse.html?cat=' + encodeURIComponent(it.category);
+    document.getElementById('itemTitle').textContent = it.title;
+    document.getElementById('itemCat').textContent = it.category;
+    document.getElementById('itemDesc').textContent = it.description;
+
+    // Status badge
+    const statusEl = document.getElementById('itemStatus');
+    statusEl.className = 'badge badge-' + it.status;
+    statusEl.textContent = it.status;
+
+    // Specs
+    document.getElementById('specRate').textContent    = '₱' + it.dailyRate.toLocaleString();
+    document.getElementById('specDeposit').textContent = '₱' + it.securityDeposit.toLocaleString();
+    document.getElementById('specMin').textContent     = (it.minDays || 1) + ' day' + ((it.minDays || 1) > 1 ? 's' : '');
+    document.getElementById('specMax').textContent     = (it.maxDays || 30) + ' days';
+    document.getElementById('priceBig').textContent    = '₱' + it.dailyRate.toLocaleString();
+    document.getElementById('depositBig').textContent  = '₱' + it.securityDeposit.toLocaleString();
+    const mcPrice = document.getElementById('mcPrice');
+    if (mcPrice) mcPrice.textContent = '₱' + it.dailyRate.toLocaleString();
+
+    // Rating
+    const rating = (it.stats && it.stats.rating) ? it.stats.rating : 0;
+    document.getElementById('itemRating').textContent = rating ? rating.toFixed(1) : 'New';
+    document.getElementById('itemReviewCount').textContent = (it.stats && it.stats.reviewCount) || 0;
+    document.getElementById('reviewsCount').textContent    = (it.stats && it.stats.reviewCount) || 0;
+    const stars = Math.max(0, Math.min(5, Math.round(rating)));
+    document.getElementById('itemStars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+
+    // Listed-ago
+    const days = Math.max(1, Math.round((Date.now() - new Date(it.createdAt)) / 86400000));
+    document.getElementById('itemListedAgo').textContent = days < 30
+      ? `${days} day${days > 1 ? 's' : ''} ago`
+      : `${Math.round(days / 30)} month${Math.round(days / 30) > 1 ? 's' : ''} ago`;
+
+    // Owner
+    const owner = it.owner || {};
+    const ownerName = owner.handcashHandle || owner.name || 'Owner';
+    const initials = ownerName.replace(/^\$/, '').split(/\s+/).map(s => s[0]).join('').toUpperCase().slice(0, 2);
+    document.getElementById('ownerAvatar').textContent = initials || 'O';
+    document.getElementById('ownerName').textContent = ownerName;
+    const joined = owner.createdAt ? new Date(owner.createdAt).getFullYear() : '—';
+    const rentals = (owner.stats && owner.stats.rentalsAsOwner) || 0;
+    const verified = owner.isVerified ? ' · Verified' : '';
+    document.getElementById('ownerMeta').textContent = `Joined ${joined} · ${rentals} successful rental${rentals === 1 ? '' : 's'}${verified}`;
+
+    // Gallery
+    const photos = (it.photos && it.photos.length) ? it.photos : [{ url: `https://picsum.photos/seed/${it._id}/1200/800` }];
+    document.getElementById('mainImg').src = photos[0].url;
+    document.getElementById('mainImg').alt = it.title;
+    const thumbs = document.getElementById('galleryThumbs');
+    thumbs.innerHTML = photos.map((p, i) => `
+      <button class="thumb ${i === 0 ? 'active' : ''}" onclick="setThumb(this,'${p.url.replace(/'/g, '%27')}')" role="tab" aria-selected="${i === 0}" aria-label="View image ${i + 1}">
+        <img src="${p.url}" alt="" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${it._id}-${i}/160/120'"/>
+      </button>
+    `).join('');
+
+    // Booking form date bounds
+    if (it.availableFrom) startEl.min = it.availableFrom.split('T')[0];
+    if (it.availableTo)   endEl.max   = it.availableTo.split('T')[0];
+
+    // Disable booking form if not available
+    if (it.status !== 'available') {
+      document.getElementById('bookingForm').querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
+      const note = document.querySelector('.booking-note');
+      if (note) {
+        note.style.color = 'var(--warning)';
+        note.textContent = `Currently ${it.status} — not accepting bookings right now.`;
+      }
+    }
+
+    // Disable if user is trying to rent their own item
+    if (window.Auth && Auth.get() && (Auth.get()._id || Auth.get().id) === (owner._id || owner.id)) {
+      document.getElementById('bookingForm').querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
+      const note = document.querySelector('.booking-note');
+      if (note) { note.style.color = 'var(--muted)'; note.textContent = "This is your own listing."; }
+    }
+
+    calc();
+  }
+
+  /* ─── Gallery thumb switching ───────────────────────────────────────── */
+  function setThumb(el, url) {
     document.querySelectorAll('.thumb').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
     el.classList.add('active');
     el.setAttribute('aria-selected','true');
-    const main = document.getElementById('mainImg');
-    main.onerror = () => { main.onerror = null; main.src = `https://picsum.photos/seed/${seed}/1200/800`; };
-    main.src = `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=1200&q=75`;
+    document.getElementById('mainImg').src = url;
   }
 
-  const DAILY = 850, DEPOSIT = 2500, FEE_PCT = 0.05;
+  /* ─── Booking calculation ───────────────────────────────────────────── */
   const startEl = document.getElementById('startDate');
   const endEl = document.getElementById('endDate');
   const today = new Date().toISOString().split('T')[0];
   startEl.min = today; endEl.min = today;
 
   function calc() {
+    const rate    = CURRENT_ITEM ? CURRENT_ITEM.dailyRate       : 0;
+    const deposit = CURRENT_ITEM ? CURRENT_ITEM.securityDeposit : 0;
+
     if (!startEl.value || !endEl.value) {
-      document.getElementById('days').textContent = '0';
+      document.getElementById('days').textContent     = '0';
       document.getElementById('subtotal').textContent = '0';
-      document.getElementById('fee').textContent = '0';
-      document.getElementById('total').textContent = '2,500';
+      document.getElementById('fee').textContent      = '0';
+      document.getElementById('total').textContent    = deposit.toLocaleString();
       return;
     }
     const s = new Date(startEl.value), e = new Date(endEl.value);
     const days = Math.max(0, Math.round((e - s) / 86400000));
-    const subtotal = days * DAILY;
+    const subtotal = days * rate;
     const fee = Math.round(subtotal * FEE_PCT);
-    const total = subtotal + fee + DEPOSIT;
-    document.getElementById('days').textContent = days;
+    const total = subtotal + fee + deposit;
+    document.getElementById('days').textContent     = days;
     document.getElementById('subtotal').textContent = subtotal.toLocaleString();
-    document.getElementById('fee').textContent = fee.toLocaleString();
-    document.getElementById('total').textContent = total.toLocaleString();
+    document.getElementById('fee').textContent      = fee.toLocaleString();
+    document.getElementById('total').textContent    = total.toLocaleString();
+
+    // Reflect day rate in breakdown label
+    const dayLabel = document.querySelector('#breakdown .bb-row span');
+    if (dayLabel && rate) dayLabel.innerHTML = `₱${rate.toLocaleString()} × <span id="days">${days}</span> days`;
   }
   startEl.addEventListener('change', () => { endEl.min = startEl.value || today; calc(); });
   endEl.addEventListener('change', calc);
@@ -387,24 +478,68 @@
   const charCount = document.getElementById('charCount');
   notes.addEventListener('input', () => charCount.textContent = notes.value.length);
 
-  document.getElementById('bookingForm').addEventListener('submit', e => {
+  /* ─── Booking submit ────────────────────────────────────────────────── */
+  document.getElementById('bookingForm').addEventListener('submit', async e => {
     e.preventDefault();
+    if (!CURRENT_ITEM) return;
     let valid = true;
     if (!startEl.value) { startEl.classList.add('is-invalid'); valid = false; }
     else startEl.classList.remove('is-invalid');
     if (!endEl.value || new Date(endEl.value) <= new Date(startEl.value)) {
       endEl.classList.add('is-invalid'); valid = false;
     } else endEl.classList.remove('is-invalid');
+    if (!valid) return;
 
-    if (valid) alert('Booking request submitted! The owner will review and confirm.');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+      const r = await fetch('/api/rentals', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          itemId:    CURRENT_ITEM._id,
+          startDate: startEl.value,
+          endDate:   endEl.value,
+          purpose:   document.getElementById('purpose').value || undefined,
+          notes:     notes.value || undefined,
+        }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Booking failed');
+
+      // Success — show inline confirmation and redirect to dashboard
+      const box = document.querySelector('.booking-box');
+      box.innerHTML = `
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-size:3rem;margin-bottom:12px">✓</div>
+          <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin-bottom:8px">Request sent</h3>
+          <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px">The owner will review and respond. You'll see it under "My Rentals" on your dashboard.</p>
+          <a href="dashboard.html" class="btn btn-primary px-4 py-3">Go to Dashboard</a>
+        </div>`;
+    } catch (err) {
+      alert('Could not submit booking: ' + err.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
   });
 
+  /* ─── Nav ───────────────────────────────────────────────────────────── */
   function toggleNav(btn){
     const links = document.getElementById('navLinks');
     const open = links.classList.toggle('open');
     btn.setAttribute('aria-expanded', open);
     btn.textContent = open ? '✕' : '☰';
   }
+
+  // Wait until Auth is loaded so we can check whose listing this is.
+  (async function init() {
+    if (window.Auth) await Auth.ready();
+    bootItem();
+  })();
 </script>
 
 </body>
