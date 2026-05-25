@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1200px; height: 630px;
+      background: #0B0B12;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden; position: relative;
+    }
+    .blob-purple {
+      position: absolute; width: 520px; height: 520px;
+      background: rgba(168,85,247,.28); border-radius: 50%;
+      filter: blur(130px); top: -180px; left: -160px;
+    }
+    .blob-cyan {
+      position: absolute; width: 420px; height: 420px;
+      background: rgba(0,200,255,.22); border-radius: 50%;
+      filter: blur(110px); bottom: -100px; right: -80px;
+    }
+    .content {
+      position: relative; z-index: 1;
+      padding: 90px 100px;
+      height: 100%; display: flex; flex-direction: column; justify-content: center;
+    }
+    .logo {
+      font-size: 80px; font-weight: 800; letter-spacing: -3px;
+      color: #fff; margin-bottom: 24px; line-height: 1;
+    }
+    .logo span { color: #00C8FF; }
+    .tagline {
+      font-size: 30px; color: #9CA3AF; font-weight: 300;
+      max-width: 680px; line-height: 1.5;
+    }
+    .badge {
+      position: absolute; bottom: 52px; right: 80px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 99px; padding: 8px 22px;
+      color: #9CA3AF; font-size: 17px;
+    }
+    .badge span { color: #00C8FF; }
+    .bar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #A855F7, #00C8FF, #E91E8C);
+    }
+  </style>
+</head>
+<body>
+  <div class="blob-purple"></div>
+  <div class="blob-cyan"></div>
+  <div class="content">
+    <div class="logo">T<span>0</span>kenRent</div>
+    <div class="tagline">Smart Peer-to-Peer Equipment Rental.<br/>Transparent, tracked, and blockchain-backed.</div>
+  </div>
+  <div class="badge">Powered by <span>BSV</span></div>
+  <div class="bar"></div>
+</body>
+</html>
