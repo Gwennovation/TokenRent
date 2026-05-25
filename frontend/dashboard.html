@@ -492,6 +492,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="auth.js"></script>
+<script src="rental-modal.js"></script>
 <script src="auth-gate.js"></script>
 <script>
   // ─── DATA LOADERS ──────────────────────────────────────────────────
@@ -714,6 +715,48 @@
     btn.textContent = open ? '✕' : '☰';
   }
 </script>
+
+<!-- ── Rental Detail Modal ─────────────────────────────────────── -->
+<div class="rdm-overlay" id="rdmOverlay" onclick="closeRentalModal(event)">
+  <div class="rdm-panel" role="dialog" aria-modal="true" aria-labelledby="rdmItemName">
+
+    <!-- Header -->
+    <div class="rdm-header">
+      <div class="rdm-header-left">
+        <div class="rdm-thumb" id="rdmThumb"></div>
+        <div>
+          <div class="rdm-item-name" id="rdmItemName">Loading…</div>
+          <div class="rdm-item-meta" id="rdmItemMeta"></div>
+        </div>
+      </div>
+      <div class="rdm-header-right">
+        <span id="rdmStatusBadge"></span>
+        <button class="rdm-close" onclick="closeRentalModal()" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <!-- Tab pills -->
+    <div class="rdm-tabs" role="tablist">
+      <button class="rdm-tab active" role="tab" onclick="rdmSwitchTab('overview',this)">Overview</button>
+      <button class="rdm-tab"        role="tab" onclick="rdmSwitchTab('contract',this)">Contract</button>
+      <button class="rdm-tab"        role="tab" onclick="rdmSwitchTab('chat',this)">Chat</button>
+    </div>
+
+    <!-- Panes -->
+    <div class="rdm-body">
+      <div class="rdm-pane active" id="rdm-overview" role="tabpanel">
+        <div id="rdmOverviewContent"><div class="rdm-loading">Loading…</div></div>
+      </div>
+      <div class="rdm-pane" id="rdm-contract" role="tabpanel">
+        <div id="rdmContractContent"><div class="rdm-loading">Loading…</div></div>
+      </div>
+      <div class="rdm-pane" id="rdm-chat" role="tabpanel">
+        <div id="rdmChatContent"><div class="rdm-loading">Loading…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
