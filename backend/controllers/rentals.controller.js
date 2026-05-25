@@ -142,3 +142,24 @@ exports.review = async (req, res, next) => {
     res.json({ rental });
   } catch (err) { next(err); }
 };
+
+/* ---------- GET /api/rentals/:id (owner or renter only) ---------- */
+exports.getOne = async (req, res, next) => {
+  try {
+    const rental = await Rental.findById(req.params.id)
+      .populate('item',   'title category condition photos dailyRate')
+      .populate('owner',  'name handcashHandle isVerified location')
+      .populate('renter', 'name handcashHandle isVerified location');
+
+    if (!rental) return res.status(404).json({ error: 'Rental not found' });
+
+    const uid = req.user._id.toString();
+    const isParty = uid === rental.owner._id.toString() ||
+                    uid === rental.renter._id.toString();
+    if (!isParty && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    res.json({ rental });
+  } catch (err) { next(err); }
+};
