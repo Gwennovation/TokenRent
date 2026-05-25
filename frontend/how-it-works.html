@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>How It Works — T0kenRent</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    .hiw-wrap { max-width: 1180px; margin: 0 auto; padding: 60px clamp(20px, 4vw, 56px) 80px; position: relative; }
+
+    .hiw-glow1 { width: 480px; height: 480px; background: rgba(168,85,247,.16); top: -150px; left: -120px; }
+    .hiw-glow2 { width: 380px; height: 380px; background: rgba(0,200,255,.13); top: 200px; right: -100px; }
+
+    .hiw-head { text-align: center; margin-bottom: 56px; position: relative; }
+    .hiw-head .badge-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--purple-10); border: 1px solid rgba(168,85,247,.3);
+      border-radius: 99px; padding: 6px 16px;
+      font-size: .72rem; color: #C084FC;
+      font-weight: 600; letter-spacing: .06em;
+      margin-bottom: 20px;
+    }
+    .hiw-head h1 {
+      font-family:'Syne',sans-serif; font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      letter-spacing: -1.5px; line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .hiw-head p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    /* Role switcher tabs */
+    .role-tabs {
+      display: inline-flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 4px;
+      margin: 0 auto 40px;
+    }
+    .role-tab {
+      padding: 10px 22px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family:'Syne',sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .role-tab.active { background: var(--cyan); color: var(--bg-deep); }
+
+    /* Step timeline */
+    .steps { display: none; }
+    .steps.active { display: block; }
+    .step-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .step-row::before {
+      content: '';
+      position: absolute;
+      left: 39px; top: 80px; bottom: -32px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--cyan), transparent);
+      opacity: .25;
+    }
+    .step-row:last-child::before { display: none; }
+
+    .step-num-circle {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-family:'Syne',sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-row:nth-child(2) .step-num-circle { border-color: var(--purple); color: #C084FC; }
+    .step-row:nth-child(3) .step-num-circle { border-color: var(--pink);   color: #F472B6; }
+    .step-row:nth-child(4) .step-num-circle { border-color: var(--cyan);   color: var(--cyan); }
+    .step-row:nth-child(5) .step-num-circle { border-color: var(--purple); color: #C084FC; }
+    .step-row:nth-child(6) .step-num-circle { border-color: var(--pink);   color: #F472B6; }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 24px 26px;
+      transition: border-color .25s, transform .25s;
+    }
+    .step-card:hover { border-color: rgba(0,200,255,.25); transform: translateX(4px); }
+    .step-card .step-meta {
+      font-family:'Syne',sans-serif;
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+    .step-card h3 {
+      font-family:'Syne',sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .step-card p { color: var(--muted); font-size: .94rem; line-height: 1.7; margin-bottom: 12px; }
+    .step-card ul { padding-left: 20px; margin: 0; color: var(--muted); font-size: .88rem; }
+    .step-card ul li { margin-bottom: 6px; }
+    .step-card ul li::marker { color: var(--cyan); }
+
+    /* Visual flow diagram */
+    .flow-section {
+      margin-top: 80px;
+      padding: 48px 30px;
+      background: var(--bg-subtle);
+      border-radius: 24px;
+      border: 1px solid var(--border-soft);
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+    .flow-node {
+      background: var(--bg-card);
+      border: 1px solid rgba(0,200,255,.18);
+      border-radius: 14px;
+      padding: 22px 14px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-node .icn { font-size: 1.8rem; margin-bottom: 8px; }
+    .flow-node h4 { font-family:'Syne',sans-serif; font-weight: 700; font-size: .92rem; margin-bottom: 4px; }
+    .flow-node p { font-size: .76rem; color: var(--muted); }
+    .flow-arrow {
+      font-size: 1.4rem;
+      color: var(--cyan);
+      text-align: center;
+      opacity: .6;
+    }
+
+    /* Trust section */
+    .trust-section { margin-top: 80px; }
+    .trust-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 26px;
+      height: 100%;
+      transition: transform .2s, border-color .2s;
+    }
+    .trust-card:hover { transform: translateY(-3px); border-color: rgba(0,200,255,.25); }
+    .trust-card .ticn { font-size: 1.8rem; margin-bottom: 12px; }
+    .trust-card h3 { font-family:'Syne',sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 8px; }
+    .trust-card p  { color: var(--muted); font-size: .86rem; line-height: 1.65; }
+
+    /* FAQ */
+    .faq-section { margin-top: 80px; }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 22px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-family:'Syne',sans-serif;
+      font-weight: 600;
+      font-size: .95rem;
+      transition: background .2s;
+      user-select: none;
+    }
+    .faq-q:hover { background: rgba(255,255,255,.02); }
+    .faq-q::after {
+      content: '+';
+      color: var(--cyan);
+      font-size: 1.4rem;
+      font-weight: 400;
+      transition: transform .25s;
+      flex-shrink: 0;
+    }
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease, padding .3s ease;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.7;
+    }
+    .faq-item.open .faq-a {
+      max-height: 400px;
+      padding: 0 22px 18px;
+    }
+
+    /* CTA */
+    .hiw-cta {
+      margin-top: 90px;
+      text-align: center;
+      padding: 60px 30px;
+      background: linear-gradient(135deg, rgba(168,85,247,.08), rgba(0,200,255,.06));
+      border: 1px solid var(--border-soft);
+      border-radius: 24px;
+    }
+    .hiw-cta h2 { font-family:'Syne',sans-serif; font-weight: 800; font-size: clamp(1.6rem,3vw,2.4rem); letter-spacing: -1px; margin-bottom: 12px; }
+    .hiw-cta p { color: var(--muted); max-width: 460px; margin: 0 auto 28px; }
+
+    @media (max-width: 768px) {
+      .hiw-wrap { padding: 40px 16px 60px; }
+      .step-row { grid-template-columns: 60px 1fr; gap: 14px; margin-bottom: 24px; }
+      .step-num-circle { width: 60px; height: 60px; font-size: 1.4rem; }
+      .step-row::before { left: 29px; top: 60px; bottom: -24px; }
+      .flow-grid { grid-template-columns: 1fr; }
+      .flow-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="tr-nav">
+  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+  <div class="nav-links ms-auto" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="how-it-works.html" class="active">How It Works</a>
+    <a href="browse.html">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" class="nav-cta">Login</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="hiw-wrap">
+    <div class="glow hiw-glow1"></div>
+    <div class="glow hiw-glow2"></div>
+
+    <!-- HEAD -->
+    <div class="hiw-head">
+      <div class="badge-tag">⚡ Step-by-Step Guide</div>
+      <h1>How <span class="g-text">T0kenRent</span> Works</h1>
+      <p>From signing up to releasing your deposit — see exactly how every rental flows through the platform, end to end.</p>
+    </div>
+
+    <!-- ROLE TABS -->
+    <div class="text-center">
+      <div class="role-tabs" role="tablist">
+        <button class="role-tab active" onclick="switchRole('renter',this)" role="tab" aria-selected="true">I'm a Renter</button>
+        <button class="role-tab" onclick="switchRole('owner',this)" role="tab" aria-selected="false">I'm an Owner</button>
+      </div>
+    </div>
+
+    <!-- RENTER FLOW -->
+    <div class="steps active" id="steps-renter">
+
+      <div class="step-row">
+        <div class="step-num-circle">01</div>
+        <div class="step-card">
+          <div class="step-meta">Start Here</div>
+          <h3>Connect Your Wallet or Create an Account</h3>
+          <p>Connect your HandCash wallet for a frictionless blockchain-based identity, or create a free email account. Your profile tracks everything you rent in one dashboard.</p>
+          <ul>
+            <li>HandCash users: one-click sign-in with your <code style="color:var(--cyan)">$handle</code></li>
+            <li>Email users: standard registration with secure password</li>
+            <li>No fees to join — you only pay when you book</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">02</div>
+        <div class="step-card">
+          <div class="step-meta">Discover</div>
+          <h3>Browse &amp; Search the Marketplace</h3>
+          <p>Filter equipment by category, location, or availability. Each listing shows clear photos, the daily rate, security deposit, owner profile, and reviews from past renters.</p>
+          <ul>
+            <li>Live filters: Construction · Photography · Outdoor · Events · Vehicles · Electronics</li>
+            <li>Status badges show whether an item is Available, Rented, or Overdue</li>
+            <li>Sort by price, popularity, or newest listings</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">03</div>
+        <div class="step-card">
+          <div class="step-meta">Book</div>
+          <h3>Request a Rental</h3>
+          <p>Pick your dates, see the total cost broken down (rental fee + platform fee + refundable deposit), and submit your booking request. The owner reviews and confirms.</p>
+          <ul>
+            <li>Date picker prevents conflicts with existing bookings</li>
+            <li>You see the exact total — no hidden fees</li>
+            <li>You're not charged until the owner accepts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">04</div>
+        <div class="step-card">
+          <div class="step-meta">Pay &amp; Pick Up</div>
+          <h3>Secure Payment &amp; Item Handover</h3>
+          <p>When the owner accepts, your payment is processed and the security deposit is held in escrow. Coordinate pickup details directly through the platform's messaging.</p>
+          <ul>
+            <li>Deposit is held safely — not paid out to the owner</li>
+            <li>Item handover confirmed by both parties in-app</li>
+            <li>Smart contract logs the rental period and condition</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">05</div>
+        <div class="step-card">
+          <div class="step-meta">Use &amp; Return</div>
+          <h3>Rent the Item, Then Return It</h3>
+          <p>Use the equipment for your agreed rental period. Return on time and in the same condition you received it.</p>
+          <ul>
+            <li>Reminders sent before your due date</li>
+            <li>Need an extension? Request one in-app, the owner can accept or decline</li>
+            <li>Late returns trigger overdue fees as agreed in the listing</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">06</div>
+        <div class="step-card">
+          <div class="step-meta">Wrap Up</div>
+          <h3>Get Your Deposit Back &amp; Leave a Review</h3>
+          <p>On safe return, your security deposit is automatically released back to your wallet or card. Leave a review for the owner — it helps everyone in the community.</p>
+          <ul>
+            <li>Deposit released within minutes of return confirmation</li>
+            <li>Transaction is permanently logged in your history</li>
+            <li>Reviews build trust for both sides of the marketplace</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- OWNER FLOW -->
+    <div class="steps" id="steps-owner">
+
+      <div class="step-row">
+        <div class="step-num-circle">01</div>
+        <div class="step-card">
+          <div class="step-meta">Get Set Up</div>
+          <h3>Connect a Wallet &amp; Verify Your Identity</h3>
+          <p>Sign in with HandCash or create an email account. Verified owners get a trust badge and rank higher in search results.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">02</div>
+        <div class="step-card">
+          <div class="step-meta">Create Your Listing</div>
+          <h3>List Your Equipment in 3 Minutes</h3>
+          <p>Upload photos, write a clear description, choose a category, and set your daily rate plus security deposit. You can also set availability windows.</p>
+          <ul>
+            <li>Multi-step form with progress tracking</li>
+            <li>Drag-and-drop photo upload (up to 6 photos per item)</li>
+            <li>Save drafts and finish later</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">03</div>
+        <div class="step-card">
+          <div class="step-meta">Receive Requests</div>
+          <h3>Review &amp; Approve Booking Requests</h3>
+          <p>Renters submit booking requests. You see who they are, their rental history, and reviews from other owners before deciding.</p>
+          <ul>
+            <li>Accept or decline with one click</li>
+            <li>Message the renter directly before approving</li>
+            <li>You're never auto-booked — every rental needs your green light</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">04</div>
+        <div class="step-card">
+          <div class="step-meta">Hand Off</div>
+          <h3>Hand Over the Item</h3>
+          <p>Coordinate pickup with the renter through in-app messaging. Both sides confirm the item's condition at handover.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">05</div>
+        <div class="step-card">
+          <div class="step-meta">Track</div>
+          <h3>Monitor Active Rentals</h3>
+          <p>Your dashboard shows every active rental, upcoming returns, and any overdue items. Send reminders automatically when something is late.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num-circle">06</div>
+        <div class="step-card">
+          <div class="step-meta">Get Paid</div>
+          <h3>Receive Payment &amp; Build Your Reputation</h3>
+          <p>When the item is safely returned, your rental fee is paid out and the renter's deposit is released. Build a track record to attract more renters.</p>
+          <ul>
+            <li>Platform fee: 5% — that's it</li>
+            <li>Payouts straight to your HandCash wallet or bank</li>
+            <li>Every successful rental boosts your rating</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FLOW DIAGRAM -->
+    <div class="flow-section">
+      <div class="text-center" style="margin-bottom:32px">
+        <div class="sec-label">Visual Flow</div>
+        <h2 class="sec-title">The whole journey at a glance</h2>
+      </div>
+      <div class="flow-grid">
+        <div class="flow-node"><div class="icn">🔐</div><h4>Sign In</h4><p>HandCash or email</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="icn">🔍</div><h4>Browse</h4><p>Find &amp; book gear</p></div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-grid" style="margin-top:12px">
+        <div class="flow-node"><div class="icn">🤝</div><h4>Confirm</h4><p>Owner approves</p></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="icn">📦</div><h4>Use &amp; Return</h4><p>Deposit released</p></div>
+        <div class="flow-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- TRUST -->
+    <div class="trust-section">
+      <div class="sec-head text-center" style="margin-bottom:36px">
+        <div class="sec-label pink">Why It Works</div>
+        <h2 class="sec-title">Built on transparency &amp; trust</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">🔗</div><h3>Blockchain-Backed Records</h3><p>Every rental, payment, and deposit is logged on-chain via HandCash — auditable, permanent, and tamper-proof.</p></div></div>
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">💎</div><h3>Smart Deposits</h3><p>Security deposits are held in escrow until safe return is confirmed by both parties — no chasing, no disputes.</p></div></div>
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">⭐</div><h3>Verified Reviews</h3><p>Only people who actually completed a rental can leave a review. No fake ratings, no astroturfing.</p></div></div>
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">📋</div><h3>Clear Contracts</h3><p>Every booking generates a digital rental agreement spelling out fees, duration, deposit, and conditions.</p></div></div>
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">⏱️</div><h3>Automated Reminders</h3><p>Due dates, overdue flags, and return reminders are handled by the system — no manual chasing.</p></div></div>
+        <div class="col-md-6 col-lg-4"><div class="trust-card"><div class="ticn">💬</div><h3>In-App Messaging</h3><p>Communicate directly within the platform. All messages are logged so there's a record if a dispute arises.</p></div></div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <div class="sec-head text-center" style="margin-bottom:36px">
+        <div class="sec-label purple">Common Questions</div>
+        <h2 class="sec-title">Frequently asked</h2>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What is HandCash and why do I need it?</div>
+        <div class="faq-a">HandCash is a Bitcoin SV wallet that lets you sign in with a <code style="color:var(--cyan)">$handle</code> instead of a password. Your rental history, deposits, and payouts are tied to your wallet — making everything transparent and portable. If you'd rather use email, that works too.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How is my security deposit kept safe?</div>
+        <div class="faq-a">The deposit is held in escrow — neither you nor the owner can access it during the rental. It's only released when both parties confirm the item was returned in good condition. If there's a damage dispute, the platform helps mediate.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What if the item gets damaged?</div>
+        <div class="faq-a">Minor wear-and-tear is expected. For real damage, the owner files a claim with photos. Both parties present their case, and the platform's dispute resolution releases the appropriate portion of the deposit. We keep all messages and condition photos on record.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How much does it cost to list an item?</div>
+        <div class="faq-a">Listing is completely free. T0kenRent only takes a 5% platform fee on completed rentals — that's it. No monthly fees, no listing fees, no hidden charges.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I cancel a booking?</div>
+        <div class="faq-a">Yes. Renters can cancel free of charge up to 24 hours before the rental starts. Owners can cancel any time before handover. Late cancellations may incur a small fee, set by the owner in the listing.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is T0kenRent only for the Philippines?</div>
+        <div class="faq-a">For this initial phase, T0kenRent is focused on the Philippines (₱ pricing, local pickup). International expansion is on the roadmap once we've validated the model locally.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="hiw-cta">
+      <h2>Ready to start <span class="g-text">renting smarter?</span></h2>
+      <p>Connect your wallet or create an account in under a minute and start browsing equipment from verified owners.</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="login.html" class="btn btn-primary px-4 py-3">Get Started</a>
+        <a href="browse.html" class="btn btn-outline-cyan px-4 py-3">Browse Equipment</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="tr-footer">
+  <div class="f-logo">T<em>0</em>kenRent</div>
+  <small>Blockchain-Based Smart Rental · Web Systems</small>
+  <div class="f-links">
+    <a href="index.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="list-item.html">List Item</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html">Login</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Auth && Auth.isAuthed()) {
+      const cta = document.querySelector('.nav-cta');
+      if (cta) {
+        cta.textContent = '⏻ ' + Auth.displayName();
+        cta.setAttribute('href', 'javascript:void(0)');
+        cta.onclick = (e) => { e.preventDefault(); if (confirm('Sign out?')) Auth.signOut(); };
+      }
+    }
+  });
+
+  function switchRole(role, btn) {
+    document.querySelectorAll('.role-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+    document.querySelectorAll('.steps').forEach(s => s.classList.remove('active'));
+    document.getElementById('steps-' + role).classList.add('active');
+  }
+
+  function toggleFaq(el) {
+    el.parentElement.classList.toggle('open');
+  }
+
+  function toggleNav(btn){
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    btn.textContent = open ? '✕' : '☰';
+  }
+</script>
+
+</body>
+</html>

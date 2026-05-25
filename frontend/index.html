@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
   <!-- Shared design system -->
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="styles.css"/>
 
   <style>
     /* Landing-only styles */
@@ -269,6 +269,7 @@
   <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks" onclick="toggleNav(this)">☰</button>
   <div class="nav-links ms-auto" id="navLinks">
     <a href="index.html" class="active">Home</a>
+    <a href="how-it-works.html">How It Works</a>
     <a href="browse.html">Browse</a>
     <a href="list-item.html">List Item</a>
     <a href="dashboard.html">Dashboard</a>
@@ -292,9 +293,9 @@
   </div>
 
   <div class="hero-stats">
-    <div><div class="stat-num">5</div><div class="stat-lbl">Team Members</div></div>
     <div><div class="stat-num">100%</div><div class="stat-lbl">Responsive</div></div>
     <div><div class="stat-num">0</div><div class="stat-lbl">Hidden Fees</div></div>
+    <div><div class="stat-num">5%</div><div class="stat-lbl">Platform Fee</div></div>
   </div>
 </header>
 
@@ -396,22 +397,6 @@
   </div>
 </section>
 
-<!-- TEAM -->
-<section class="section" id="team">
-  <div class="sec-head">
-    <div class="sec-label">The Team</div>
-    <h2 class="sec-title">5 Members · Web Systems</h2>
-    <p class="sec-sub">A group of five developers building the full front-end stack together.</p>
-  </div>
-  <div class="row g-3 justify-content-center">
-    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-c">LD</div><h4>Leiana Dilag</h4><p>Web Systems</p></div></div>
-    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-p">SP</div><h4>Shesly-Jhaey Peregrina</h4><p>Web Systems</p></div></div>
-    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-k">GM</div><h4>Gwyneth Manalo</h4><p>Web Systems</p></div></div>
-    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-c">IQ</div><h4>Isaac Quicho</h4><p>Web Systems</p></div></div>
-    <div class="col-6 col-md-4 col-lg-2"><div class="team-card"><div class="av av-p">CV</div><h4>Cyrus Vibal</h4><p>Web Systems</p></div></div>
-  </div>
-</section>
-
 <!-- CTA BAND -->
 <div class="cta-band">
   <h2>Ready to <span class="g-text">rent smarter?</span></h2>
@@ -436,7 +421,20 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
 <script>
+  // Reflect auth state in the nav CTA without showing a gate.
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Auth && Auth.isAuthed()) {
+      const cta = document.querySelector('.nav-cta');
+      if (cta) {
+        cta.textContent = '⏻ ' + Auth.displayName();
+        cta.setAttribute('href', 'javascript:void(0)');
+        cta.onclick = (e) => { e.preventDefault(); if (confirm('Sign out?')) Auth.signOut(); };
+      }
+    }
+  });
+
   function toggleNav(btn){
     const links = document.getElementById('navLinks');
     const open = links.classList.toggle('open');

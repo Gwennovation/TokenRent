@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="styles.css"/>
 
   <style>
     .dash-layout {
@@ -221,10 +221,11 @@
   <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
   <div class="nav-links ms-auto" id="navLinks">
     <a href="index.html">Home</a>
+    <a href="how-it-works.html">How It Works</a>
     <a href="browse.html">Browse</a>
     <a href="list-item.html">List Item</a>
     <a href="dashboard.html" class="active">Dashboard</a>
-    <a href="login.html" class="nav-cta">Logout</a>
+    <a href="login.html" class="nav-cta">Login</a>
   </div>
 </nav>
 
@@ -277,16 +278,16 @@
         <!-- Stats -->
         <div class="row g-3 mb-3">
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Active Rentals</div><div class="s-val c">3</div><div class="s-delta">↑ 1 from last week</div></div>
+            <div class="stat-card"><div class="s-label">Active Rentals</div><div class="s-val c" id="statActive">—</div><div class="s-delta">Across both roles</div></div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Pending Requests</div><div class="s-val p">2</div><div class="s-delta">Needs your review</div></div>
+            <div class="stat-card"><div class="s-label">Pending Requests</div><div class="s-val p" id="statPending">—</div><div class="s-delta">Needs your review</div></div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">Overdue Items</div><div class="s-val k">1</div><div class="s-delta">⚠ Follow up needed</div></div>
+            <div class="stat-card"><div class="s-label">Overdue Items</div><div class="s-val k" id="statOverdue">—</div><div class="s-delta">⚠ Follow up needed</div></div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="stat-card"><div class="s-label">This Month (₱)</div><div class="s-val g">8,450</div><div class="s-delta">↑ 12% from April</div></div>
+            <div class="stat-card"><div class="s-label">This Month (₱)</div><div class="s-val g" id="statSpend">—</div><div class="s-delta">Booking total</div></div>
           </div>
         </div>
 
@@ -299,29 +300,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Item</th><th>Renter</th><th>Period</th><th>Status</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=120&q=60" alt="Drill Press" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill/120/120'"/></div><div class="item-row-info"><h5>Industrial Drill Press</h5><p>₱850/day</p></div></div></td>
-                  <td style="color:var(--muted);font-size:.82rem">maria_santos</td>
-                  <td style="font-size:.82rem">May 20 – Jun 1</td>
-                  <td><span class="badge badge-rented">Rented</span></td>
-                  <td><button class="btn btn-ghost btn-sm">View</button></td>
-                </tr>
-                <tr>
-                  <td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=120&q=60" alt="DSLR Camera" onerror="this.onerror=null;this.src='https://picsum.photos/seed/camera/120/120'"/></div><div class="item-row-info"><h5>DSLR Camera Kit</h5><p>₱1,200/day</p></div></div></td>
-                  <td style="color:var(--muted);font-size:.82rem">pedro_reyes</td>
-                  <td style="font-size:.82rem">May 21 – May 28</td>
-                  <td><span class="badge badge-rented">Rented</span></td>
-                  <td><button class="btn btn-ghost btn-sm">View</button></td>
-                </tr>
-                <tr>
-                  <td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=120&q=60" alt="Welding Machine" onerror="this.onerror=null;this.src='https://picsum.photos/seed/welding/120/120'"/></div><div class="item-row-info"><h5>Welding Machine Set</h5><p>₱2,000/day</p></div></div></td>
-                  <td style="color:var(--muted);font-size:.82rem">ana_garcia</td>
-                  <td style="font-size:.82rem">May 12 – May 15</td>
-                  <td><span class="badge badge-overdue">Overdue</span></td>
-                  <td><button class="btn btn-primary btn-sm">Chase</button></td>
-                </tr>
-              </tbody>
+              <tbody id="tbActiveOverview"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -335,28 +314,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Item</th><th>Requested By</th><th>Period</th><th>Total</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=120&q=60" alt="Camping Tent" onerror="this.onerror=null;this.src='https://picsum.photos/seed/tent/120/120'"/></div><div class="item-row-info"><h5>Camping Tent (4P)</h5><p>₱300/day</p></div></div></td>
-                  <td style="color:var(--muted);font-size:.82rem">jess_dlrosa</td>
-                  <td style="font-size:.82rem">May 24 – May 27</td>
-                  <td style="font-family:'Syne',sans-serif;font-weight:700">₱1,440</td>
-                  <td>
-                    <button class="btn btn-primary btn-sm">Accept</button>
-                    <button class="btn btn-ghost btn-sm">Decline</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=120&q=60" alt="Mountain Bike" onerror="this.onerror=null;this.src='https://picsum.photos/seed/bike/120/120'"/></div><div class="item-row-info"><h5>Mountain Bike</h5><p>₱450/day</p></div></div></td>
-                  <td style="color:var(--muted);font-size:.82rem">aldo_villa</td>
-                  <td style="font-size:.82rem">May 23 – May 25</td>
-                  <td style="font-family:'Syne',sans-serif;font-weight:700">₱945</td>
-                  <td>
-                    <button class="btn btn-primary btn-sm">Accept</button>
-                    <button class="btn btn-ghost btn-sm">Decline</button>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tbPendingOverview"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -372,11 +330,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Item</th><th>Counterparty</th><th>Period</th><th>Status</th><th>Total</th></tr></thead>
-              <tbody>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=120&q=60" alt="Drill Press" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill/120/120'"/></div><div class="item-row-info"><h5>Industrial Drill Press</h5><p>Outgoing rental</p></div></div></td><td style="color:var(--muted);font-size:.82rem">maria_santos</td><td style="font-size:.82rem">May 20 – Jun 1</td><td><span class="badge badge-rented">Rented</span></td><td>₱10,200</td></tr>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=120&q=60" alt="DSLR Camera" onerror="this.onerror=null;this.src='https://picsum.photos/seed/camera/120/120'"/></div><div class="item-row-info"><h5>DSLR Camera Kit</h5><p>Outgoing rental</p></div></div></td><td style="color:var(--muted);font-size:.82rem">pedro_reyes</td><td style="font-size:.82rem">May 21 – May 28</td><td><span class="badge badge-rented">Rented</span></td><td>₱8,400</td></tr>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=120&q=60" alt="Welding Machine" onerror="this.onerror=null;this.src='https://picsum.photos/seed/welding/120/120'"/></div><div class="item-row-info"><h5>Welding Machine Set</h5><p>Outgoing rental</p></div></div></td><td style="color:var(--muted);font-size:.82rem">ana_garcia</td><td style="font-size:.82rem">May 12 – May 15</td><td><span class="badge badge-overdue">Overdue</span></td><td>₱6,000</td></tr>
-              </tbody>
+              <tbody id="tbAllRentals"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -389,10 +343,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Item</th><th>Requested By</th><th>Period</th><th>Total</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=120&q=60" alt="Camping Tent" onerror="this.onerror=null;this.src='https://picsum.photos/seed/tent/120/120'"/></div><div class="item-row-info"><h5>Camping Tent (4P)</h5><p>₱300/day</p></div></div></td><td style="color:var(--muted);font-size:.82rem">jess_dlrosa</td><td style="font-size:.82rem">May 24 – May 27</td><td>₱1,440</td><td><button class="btn btn-primary btn-sm">Accept</button> <button class="btn btn-ghost btn-sm">Decline</button></td></tr>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=120&q=60" alt="Mountain Bike" onerror="this.onerror=null;this.src='https://picsum.photos/seed/bike/120/120'"/></div><div class="item-row-info"><h5>Mountain Bike</h5><p>₱450/day</p></div></div></td><td style="color:var(--muted);font-size:.82rem">aldo_villa</td><td style="font-size:.82rem">May 23 – May 25</td><td>₱945</td><td><button class="btn btn-primary btn-sm">Accept</button> <button class="btn btn-ghost btn-sm">Decline</button></td></tr>
-              </tbody>
+              <tbody id="tbPending"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -408,11 +359,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Item</th><th>Category</th><th>Daily Rate</th><th>Status</th><th>Action</th></tr></thead>
-              <tbody>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=120&q=60" alt="Drill Press" onerror="this.onerror=null;this.src='https://picsum.photos/seed/drill/120/120'"/></div><div class="item-row-info"><h5>Industrial Drill Press</h5><p>Listed Mar 2026</p></div></div></td><td style="color:var(--muted)">Construction</td><td>₱850</td><td><span class="badge badge-rented">Rented</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=120&q=60" alt="DSLR Camera" onerror="this.onerror=null;this.src='https://picsum.photos/seed/camera/120/120'"/></div><div class="item-row-info"><h5>DSLR Camera Kit</h5><p>Listed Feb 2026</p></div></div></td><td style="color:var(--muted)">Photography</td><td>₱1,200</td><td><span class="badge badge-rented">Rented</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
-                <tr><td><div class="item-row"><div class="item-mini-icon"><img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=120&q=60" alt="Camping Tent" onerror="this.onerror=null;this.src='https://picsum.photos/seed/tent/120/120'"/></div><div class="item-row-info"><h5>Camping Tent (4P)</h5><p>Listed Apr 2026</p></div></div></td><td style="color:var(--muted)">Outdoor</td><td>₱300</td><td><span class="badge badge-available">Available</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
-              </tbody>
+              <tbody id="tbMyItems"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -425,11 +372,7 @@
           <div class="tr-table-scroll">
             <table class="tr-table">
               <thead><tr><th>Date</th><th>Item</th><th>Counterparty</th><th>Amount</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td style="font-size:.82rem">Apr 18 – Apr 22</td><td>PA Sound System</td><td style="color:var(--muted);font-size:.82rem">eli_torres</td><td>₱6,000</td><td><span class="badge badge-completed">Completed</span></td></tr>
-                <tr><td style="font-size:.82rem">Apr 03 – Apr 09</td><td>Power Generator</td><td style="color:var(--muted);font-size:.82rem">jb_marquez</td><td>₱5,400</td><td><span class="badge badge-completed">Completed</span></td></tr>
-                <tr><td style="font-size:.82rem">Mar 22 – Mar 24</td><td>DSLR Camera Kit</td><td style="color:var(--muted);font-size:.82rem">cara_dy</td><td>₱2,400</td><td><span class="badge badge-completed">Completed</span></td></tr>
-              </tbody>
+              <tbody id="tbHistory"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -496,15 +439,202 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script src="auth-gate.js"></script>
 <script>
+  // ─── DATA LOADERS ──────────────────────────────────────────────────
+  const fmt$ = n => '₱' + (n || 0).toLocaleString();
+  const fmtDate = d => new Date(d).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+  const fmtRange = (s, e) => `${fmtDate(s)} – ${fmtDate(e)}`;
+  const fallbackImg = (cat, id) => `https://picsum.photos/seed/${cat || 'item'}-${id}/120/120`;
+  const counterpartyName = u => u ? (u.handcashHandle || u.name || u.email || '—') : '—';
+
+  function itemCell(it, sub) {
+    if (!it) return `<div class="item-row"><div class="item-row-info"><h5>Deleted item</h5></div></div>`;
+    const cover = (it.photos && it.photos[0] && it.photos[0].url) || fallbackImg(it.category, it._id);
+    return `<div class="item-row">
+      <div class="item-mini-icon"><img src="${cover}" alt="${it.title}" onerror="this.onerror=null;this.src='${fallbackImg(it.category, it._id)}'"/></div>
+      <div class="item-row-info"><h5>${it.title}</h5><p>${sub || ''}</p></div>
+    </div>`;
+  }
+
+  async function loadStats() {
+    try {
+      const r = await fetch('/api/users/me/stats', { credentials: 'include' });
+      const d = await r.json();
+      if (!r.ok) throw new Error();
+      document.getElementById('statActive').textContent  = d.activeRentals;
+      document.getElementById('statPending').textContent = d.pendingRequests;
+      document.getElementById('statOverdue').textContent = d.overdue;
+      document.getElementById('statSpend').textContent   = (d.monthSpend || 0).toLocaleString();
+    } catch (e) { /* leave dashes */ }
+  }
+
+  async function fetchRentals(as, status) {
+    const params = new URLSearchParams({ as });
+    if (status) params.set('status', status);
+    const r = await fetch('/api/rentals/mine?' + params.toString(), { credentials: 'include' });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Failed');
+    return d.rentals;
+  }
+
+  function rentalsRow(rentals, mode) {
+    if (!rentals.length) return `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Nothing here yet.</td></tr>`;
+    return rentals.map(r => {
+      const other = mode === 'owner' ? r.renter : r.owner;
+      const statusBadge = `<span class="badge badge-${r.status === 'completed' ? 'completed' : r.status === 'overdue' ? 'overdue' : r.status === 'pending' ? 'pending' : 'rented'}">${r.status}</span>`;
+      let actions = '';
+      if (mode === 'owner' && r.status === 'pending') {
+        actions = `<button class="btn btn-primary btn-sm" onclick="acceptRental('${r._id}')">Accept</button>
+                   <button class="btn btn-ghost btn-sm" onclick="declineRental('${r._id}')">Decline</button>`;
+      } else if (mode === 'owner' && ['accepted','active','overdue'].includes(r.status)) {
+        actions = `<button class="btn btn-ghost btn-sm" onclick="returnRental('${r._id}')">Mark Returned</button>`;
+      } else {
+        actions = `<a class="btn btn-ghost btn-sm" href="item-detail.html?id=${r.item && r.item._id || ''}">View</a>`;
+      }
+      return `<tr>
+        <td>${itemCell(r.item, '₱' + r.dailyRate + '/day')}</td>
+        <td style="color:var(--muted);font-size:.82rem">${counterpartyName(other)}</td>
+        <td style="font-size:.82rem">${fmtRange(r.startDate, r.endDate)}</td>
+        <td>${statusBadge}</td>
+        <td>${actions}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function loadOverview() {
+    try {
+      const active = await fetchRentals('owner');
+      const activeOnly = active.filter(r => ['accepted','active','overdue'].includes(r.status)).slice(0, 5);
+      document.getElementById('tbActiveOverview').innerHTML = rentalsRow(activeOnly, 'owner');
+
+      const pending = active.filter(r => r.status === 'pending').slice(0, 5);
+      document.getElementById('tbPendingOverview').innerHTML = rentalsRow(pending, 'owner');
+    } catch (err) {
+      document.getElementById('tbActiveOverview').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+
+  async function loadAllRentals() {
+    try {
+      const [asOwner, asRenter] = await Promise.all([fetchRentals('owner'), fetchRentals('renter')]);
+      const merged = [
+        ...asOwner.map(r  => ({ ...r, _mode: 'owner' })),
+        ...asRenter.map(r => ({ ...r, _mode: 'renter' })),
+      ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const tbody = document.getElementById('tbAllRentals');
+      tbody.innerHTML = merged.length ? merged.map(r => {
+        const other = r._mode === 'owner' ? r.renter : r.owner;
+        const statusBadge = `<span class="badge badge-${r.status === 'overdue' ? 'overdue' : r.status === 'completed' ? 'completed' : 'rented'}">${r.status}</span>`;
+        return `<tr>
+          <td>${itemCell(r.item, r._mode === 'owner' ? 'Outgoing rental' : 'Incoming rental')}</td>
+          <td style="color:var(--muted);font-size:.82rem">${counterpartyName(other)}</td>
+          <td style="font-size:.82rem">${fmtRange(r.startDate, r.endDate)}</td>
+          <td>${statusBadge}</td>
+          <td>${fmt$(r.total)}</td>
+        </tr>`;
+      }).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No rentals yet.</td></tr>`;
+    } catch (err) {
+      document.getElementById('tbAllRentals').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+
+  async function loadPending() {
+    try {
+      const all = await fetchRentals('owner', 'pending');
+      document.getElementById('tbPending').innerHTML = rentalsRow(all, 'owner');
+    } catch (err) {
+      document.getElementById('tbPending').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+
+  async function loadMyItems() {
+    try {
+      const r = await fetch('/api/items/mine', { credentials: 'include' });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Failed');
+      const tbody = document.getElementById('tbMyItems');
+      tbody.innerHTML = d.items.length ? d.items.map(it => `
+        <tr>
+          <td>${itemCell(it, 'Listed ' + new Date(it.createdAt).toLocaleDateString('en-PH', { month: 'short', year: 'numeric' }))}</td>
+          <td style="color:var(--muted)">${it.category}</td>
+          <td>${fmt$(it.dailyRate)}</td>
+          <td><span class="badge badge-${it.status === 'available' ? 'available' : it.status === 'rented' ? 'rented' : 'overdue'}">${it.status}</span></td>
+          <td><a class="btn btn-ghost btn-sm" href="item-detail.html?id=${it._id}">View</a></td>
+        </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No items listed yet. <a href="list-item.html" style="color:var(--cyan)">List your first one →</a></td></tr>`;
+    } catch (err) {
+      document.getElementById('tbMyItems').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+
+  async function loadHistory() {
+    try {
+      const asOwner = await fetchRentals('owner', 'completed');
+      const asRenter = await fetchRentals('renter', 'completed');
+      const merged = [...asOwner, ...asRenter].sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+      document.getElementById('tbHistory').innerHTML = merged.length ? merged.map(r => `
+        <tr>
+          <td style="font-size:.82rem">${fmtRange(r.startDate, r.endDate)}</td>
+          <td>${r.item ? r.item.title : 'Deleted item'}</td>
+          <td style="color:var(--muted);font-size:.82rem">${counterpartyName(r.owner.equals && r.owner.equals(window._me) ? r.renter : r.owner)}</td>
+          <td>${fmt$(r.total)}</td>
+          <td><span class="badge badge-completed">Completed</span></td>
+        </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No completed rentals yet.</td></tr>`;
+    } catch (err) {
+      document.getElementById('tbHistory').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+
+  // ─── Action handlers ────────────────────────────────────────────────
+  async function patchRental(id, action) {
+    const r = await fetch(`/api/rentals/${id}/${action}`, { method: 'PATCH', credentials: 'include' });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Action failed'); return false; }
+    return true;
+  }
+  window.acceptRental  = async id => { if (await patchRental(id, 'accept'))  { await loadStats(); await loadOverview(); await loadPending(); } };
+  window.declineRental = async id => { if (confirm('Decline this request?') && await patchRental(id, 'decline')) { await loadStats(); await loadOverview(); await loadPending(); } };
+  window.returnRental  = async id => { if (confirm('Mark as returned and release the deposit?') && await patchRental(id, 'return')) { await loadStats(); await loadOverview(); await loadAllRentals(); } };
+
+  // ─── Initial load + greet ───────────────────────────────────────────
+  (async function init() {
+    await Auth.ready();
+    if (Auth.isAuthed()) {
+      const u = Auth.get();
+      window._me = u._id;
+      const greet = document.querySelector('.greet h2');
+      if (greet) greet.innerHTML = `Welcome back, ${u.name || u.handcashHandle || (u.email || '').split('@')[0]} `;
+      loadStats();
+      loadOverview();
+    }
+  })();
+
   function showTab(name, btn){
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     document.querySelectorAll('.d-nav').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    // Close mobile sidebar after navigating
     document.getElementById('dashSide').classList.remove('open');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Lazy-load each tab's data
+    if (name === 'overview') { loadStats(); loadOverview(); }
+    if (name === 'rentals')  loadAllRentals();
+    if (name === 'requests') loadPending();
+    if (name === 'items')    loadMyItems();
+    if (name === 'history')  loadHistory();
+    if (name === 'settings') {
+      const u = Auth.get();
+      if (u) {
+        const nameEl = document.getElementById('setName');
+        const emailEl = document.getElementById('setEmail');
+        const locEl = document.getElementById('setLocation');
+        if (nameEl) nameEl.value = u.name || u.handcashHandle || '';
+        if (emailEl) emailEl.value = u.email || '';
+        if (locEl) locEl.value = u.location || '';
+      }
+    }
   }
 
   function toggleSidebar(){

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="styles.css"/>
 
   <style>
     .list-wrap { max-width: 1100px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 32px) 80px; }
@@ -146,6 +146,7 @@
   <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
   <div class="nav-links ms-auto" id="navLinks">
     <a href="index.html">Home</a>
+    <a href="how-it-works.html">How It Works</a>
     <a href="browse.html">Browse</a>
     <a href="list-item.html" class="active">List Item</a>
     <a href="dashboard.html">Dashboard</a>
@@ -339,6 +340,8 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script src="auth-gate.js"></script>
 <script>
   // Char counters
   const title = document.getElementById('title');
@@ -346,12 +349,11 @@
   title.addEventListener('input', () => document.getElementById('titleCount').textContent = title.value.length);
   desc.addEventListener('input', () => document.getElementById('descCount').textContent = desc.value.length);
 
-  // Photo dropzone
+  // Photo dropzone — holds real File objects (uploaded as multipart on submit).
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
   const grid = document.getElementById('photoGrid');
-  const placeholders = ['🔨','⚙️','🔩','📦','🧰','🪛'];
-  let photos = [];
+  let photoFiles = []; // [{ file: File, preview: 'data:...' }]
 
   dropzone.addEventListener('click', () => fileInput.click());
   dropzone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
@@ -365,23 +367,33 @@
   fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
   function handleFiles(files) {
-    for (let i = 0; i < files.length && photos.length < 6; i++) {
-      photos.push(placeholders[photos.length % placeholders.length]);
+    for (const file of files) {
+      if (photoFiles.length >= 6) break;
+      if (!file.type.startsWith('image/')) continue;
+      if (file.size > 5 * 1024 * 1024) { alert(`"${file.name}" is over 5 MB — skipped.`); continue; }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        photoFiles.push({ file, preview: ev.target.result });
+        renderPhotos();
+      };
+      reader.readAsDataURL(file);
     }
-    renderPhotos();
   }
   function renderPhotos() {
-    grid.innerHTML = photos.map((p, i) =>
-      `<div class="photo-tile">${p}<button type="button" class="remove" aria-label="Remove photo" onclick="removePhoto(${i})">✕</button></div>`
+    grid.innerHTML = photoFiles.map((p, i) =>
+      `<div class="photo-tile" style="background-image:url('${p.preview}');background-size:cover;background-position:center">
+         <button type="button" class="remove" aria-label="Remove photo" onclick="removePhoto(${i})">✕</button>
+       </div>`
     ).join('');
+    updateSteps();
   }
-  function removePhoto(i) { photos.splice(i, 1); renderPhotos(); }
+  function removePhoto(i) { photoFiles.splice(i, 1); renderPhotos(); }
   window.removePhoto = removePhoto;
 
   // Step progress based on completion
   function updateSteps() {
     const detailsDone = title.value && document.getElementById('category').value && document.getElementById('condition').value && desc.value.length >= 30;
-    const photosDone = photos.length > 0;
+    const photosDone = photoFiles.length > 0;
     const pricingDone = document.getElementById('dailyRate').value && document.getElementById('deposit').value;
 
     document.querySelectorAll('.step').forEach((s, i) => {
@@ -400,8 +412,8 @@
     el.addEventListener('change', updateSteps);
   });
 
-  // Validation
-  document.getElementById('listForm').addEventListener('submit', e => {
+  // Submit — uploads photos to Cloudinary via the backend.
+  document.getElementById('listForm').addEventListener('submit', async e => {
     e.preventDefault();
     const fields = ['title','category','condition','description','dailyRate','deposit','agreeTerms'];
     let valid = true;
@@ -415,13 +427,45 @@
     });
     if (desc.value.length < 30) { desc.classList.add('is-invalid'); valid = false; }
     if (parseInt(document.getElementById('dailyRate').value) < 1) { document.getElementById('dailyRate').classList.add('is-invalid'); valid = false; }
+    if (photoFiles.length === 0) { alert('Please add at least one photo.'); valid = false; }
+    if (!valid) return;
 
-    if (valid) {
+    // Disable the publish button while uploading
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Publishing…';
+
+    const fd = new FormData();
+    fd.append('title',           document.getElementById('title').value);
+    fd.append('description',     document.getElementById('description').value);
+    fd.append('category',        document.getElementById('category').value.toLowerCase());
+    fd.append('condition',       document.getElementById('condition').value);
+    fd.append('dailyRate',       document.getElementById('dailyRate').value);
+    fd.append('securityDeposit', document.getElementById('deposit').value);
+    fd.append('minDays',         document.getElementById('minDays').value || 1);
+    fd.append('maxDays',         document.getElementById('maxDays').value || 30);
+    const from = document.getElementById('availableFrom').value;
+    const to   = document.getElementById('availableTo').value;
+    if (from) fd.append('availableFrom', from);
+    if (to)   fd.append('availableTo',   to);
+    photoFiles.forEach(p => fd.append('photos', p.file));
+
+    try {
+      const r = await fetch('/api/items', { method: 'POST', body: fd, credentials: 'include' });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Failed to publish');
+
       document.getElementById('successMsg').style.display = 'block';
+      document.getElementById('successMsg').textContent = '✓ Listing published! Redirecting to your item...';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      e.target.reset();
-      photos = []; renderPhotos();
-      setTimeout(() => document.getElementById('successMsg').style.display = 'none', 5000);
+      setTimeout(() => {
+        window.location.href = 'item-detail.html?id=' + (data.item._id || data.item.id);
+      }, 1200);
+    } catch (err) {
+      alert('Could not publish: ' + err.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
     }
   });
 

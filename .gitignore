@@ -1,0 +1,26 @@
+# --- Secrets — NEVER commit these ---
+.env
+.env.local
+.env.*.local
+
+# --- Dependencies ---
+node_modules/
+package-lock.json
+
+# --- Build / Logs ---
+dist/
+build/
+*.log
+npm-debug.log*
+
+# --- OS / Editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Test / Coverage ---
+coverage/
+.nyc_output/

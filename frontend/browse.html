@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="styles.css"/>
 
   <style>
     .browse-wrap { max-width: 1280px; margin: 0 auto; padding: 36px clamp(20px, 4vw, 56px) 80px; }
@@ -206,6 +206,7 @@
   <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
   <div class="nav-links ms-auto" id="navLinks">
     <a href="index.html">Home</a>
+    <a href="how-it-works.html">How It Works</a>
     <a href="browse.html" class="active">Browse</a>
     <a href="list-item.html">List Item</a>
     <a href="dashboard.html">Dashboard</a>
@@ -308,26 +309,11 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script src="auth-gate.js"></script>
 <script>
-  // Mock data — in a real app this would come from an API.
-  // Images: Unsplash photo IDs (royalty-free) with Picsum seed fallback per category.
-  const UNSPLASH = id => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=600&q=70`;
-  const FALLBACK = (cat, id) => `https://picsum.photos/seed/${cat}-${id}/600/400`;
-
-  const ITEMS = [
-    { id:1, title:'Industrial Drill Press',  cat:'construction', img:UNSPLASH('1572981779307-38b8cabb2407'), owner:'Marco S.',  price:850,  status:'available', rating:4.9, reviews:18 },
-    { id:2, title:'DSLR Camera Kit',         cat:'photography',  img:UNSPLASH('1502920917128-1aa500764cbd'), owner:'Anna L.',   price:1200, status:'available', rating:4.8, reviews:42 },
-    { id:3, title:'Mountain Bike',           cat:'outdoor',      img:UNSPLASH('1485965120184-e220f721d03e'), owner:'Kai R.',    price:450,  status:'rented',    rating:4.7, reviews:23 },
-    { id:4, title:'4-Person Camping Tent',   cat:'outdoor',      img:UNSPLASH('1504280390367-361c6d9f38f4'), owner:'Liza M.',   price:300,  status:'available', rating:4.6, reviews:31 },
-    { id:5, title:'Pressure Washer',         cat:'construction', img:UNSPLASH('1581094289810-adf5d25690e3'), owner:'Dan G.',    price:600,  status:'overdue',   rating:4.5, reviews:9  },
-    { id:6, title:'PA Sound System',         cat:'events',       img:UNSPLASH('1545454675-3531b543be5d'), owner:'Mira T.',   price:1500, status:'available', rating:4.9, reviews:27 },
-    { id:7, title:'MacBook Pro 16"',         cat:'electronics',  img:UNSPLASH('1517336714731-489689fd1ca8'), owner:'Joel P.',   price:2000, status:'available', rating:5.0, reviews:14 },
-    { id:8, title:'Folding Banquet Tables',  cat:'events',       img:UNSPLASH('1414235077428-338989a2e8c0'), owner:'Vee A.',    price:200,  status:'available', rating:4.4, reviews:12 },
-    { id:9, title:'Drone (4K)',              cat:'photography',  img:UNSPLASH('1473968512647-3e447244af8f'), owner:'Sam K.',    price:1100, status:'rented',    rating:4.8, reviews:21 },
-    { id:10,title:'Power Generator',         cat:'construction', img:UNSPLASH('1620283085439-39620a1e21c4'), owner:'Ron F.',    price:900,  status:'available', rating:4.7, reviews:16 },
-    { id:11,title:'Projector (4K HDR)',      cat:'electronics',  img:UNSPLASH('1626218172126-a8167b9f01dc'), owner:'Jin W.',    price:700,  status:'available', rating:4.6, reviews:19 },
-    { id:12,title:'Off-Road Buggy',          cat:'vehicles',     img:UNSPLASH('1533630018502-b00d8dcc4ec0'), owner:'Bea C.',    price:3500, status:'available', rating:4.9, reviews:8  },
-  ];
+  // Live items from /api/items — Picsum fallback for missing photos.
+  const FALLBACK = (cat, id) => `https://picsum.photos/seed/${cat || 'item'}-${id}/600/400`;
 
   const grid = document.getElementById('itemGrid');
   const empty = document.getElementById('emptyState');
@@ -339,64 +325,99 @@
   const resultCount = document.getElementById('resultCount');
 
   let state = { search: '', sort: 'popular', status: '', category: 'all' };
+  let fetchTimer = null;
 
-  function render(){
-    let filtered = ITEMS.filter(it => {
-      if (state.category !== 'all' && it.cat !== state.category) return false;
-      if (state.status && it.status !== state.status) return false;
-      if (state.search) {
-        const q = state.search.toLowerCase();
-        if (!it.title.toLowerCase().includes(q) && !it.cat.includes(q) && !it.owner.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
+  function setLoading() {
+    grid.innerHTML = Array.from({length:8}).map(() => `
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="item-card skel-card">
+          <div class="ic-img"></div>
+          <div class="ic-body">
+            <div class="skel skel-line" style="width:40%"></div>
+            <div class="skel skel-line" style="width:80%"></div>
+            <div class="skel skel-line" style="width:60%"></div>
+          </div>
+        </div>
+      </div>`).join('');
+    empty.style.display = 'none';
+    pag.style.display = 'none';
+  }
 
-    if (state.sort === 'price-low')  filtered.sort((a,b) => a.price - b.price);
-    if (state.sort === 'price-high') filtered.sort((a,b) => b.price - a.price);
-    if (state.sort === 'newest')     filtered.sort((a,b) => b.id - a.id);
+  async function fetchAndRender() {
+    setLoading();
+    const params = new URLSearchParams();
+    if (state.category && state.category !== 'all') params.set('category', state.category);
+    if (state.status)  params.set('status', state.status);
+    if (state.search)  params.set('q', state.search);
+    if (state.sort)    params.set('sort', state.sort);
 
-    resultCount.textContent = filtered.length;
-
-    if (filtered.length === 0) {
+    try {
+      const r = await fetch('/api/items?' + params.toString(), { credentials: 'include' });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Failed to load items');
+      render(data.items || []);
+    } catch (err) {
       grid.innerHTML = '';
       empty.style.display = 'block';
+      empty.querySelector('p').textContent = err.message || 'Could not load items. Is the server running?';
+      pag.style.display = 'none';
+    }
+  }
+
+  function render(items) {
+    resultCount.textContent = items.length;
+    if (!items.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      empty.querySelector('p').textContent = 'Try adjusting your filters or searching for a different term.';
       pag.style.display = 'none';
       return;
     }
     empty.style.display = 'none';
     pag.style.display = 'flex';
 
-    grid.innerHTML = filtered.map(it => `
-      <div class="col-6 col-md-4 col-lg-3">
-        <a href="item-detail.html" class="item-card" aria-label="${it.title} — ₱${it.price}/day">
-          <div class="ic-img">
-            <img src="${it.img}" alt="${it.title}" loading="lazy"
-                 onerror="this.onerror=null;this.src='${FALLBACK(it.cat, it.id)}'"/>
-            <span class="ic-badge badge badge-${it.status}">${it.status}</span>
-          </div>
-          <div class="ic-body">
-            <div class="ic-cat">${it.cat}</div>
-            <div class="ic-title">${it.title}</div>
-            <div class="ic-owner">by ${it.owner}</div>
-            <div class="ic-foot">
-              <div class="ic-price">₱${it.price.toLocaleString()} <span>/ day</span></div>
-              <div class="ic-rating"><em>★</em> ${it.rating} <span style="opacity:.6">(${it.reviews})</span></div>
+    grid.innerHTML = items.map(it => {
+      const id = it._id || it.id;
+      const cover = it.coverPhoto || (it.photos && it.photos[0] && it.photos[0].url) || FALLBACK(it.category, id);
+      const ownerName = (it.owner && (it.owner.handcashHandle || it.owner.name)) || 'Owner';
+      const rating = (it.stats && it.stats.rating) ? it.stats.rating.toFixed(1) : '—';
+      const reviews = (it.stats && it.stats.reviewCount) || 0;
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="item-detail.html?id=${id}" class="item-card" aria-label="${it.title} — ₱${it.dailyRate}/day">
+            <div class="ic-img">
+              <img src="${cover}" alt="${it.title}" loading="lazy"
+                   onerror="this.onerror=null;this.src='${FALLBACK(it.category, id)}'"/>
+              <span class="ic-badge badge badge-${it.status}">${it.status}</span>
             </div>
-          </div>
-        </a>
-      </div>
-    `).join('');
+            <div class="ic-body">
+              <div class="ic-cat">${it.category}</div>
+              <div class="ic-title">${it.title}</div>
+              <div class="ic-owner">by ${ownerName}</div>
+              <div class="ic-foot">
+                <div class="ic-price">₱${it.dailyRate.toLocaleString()} <span>/ day</span></div>
+                <div class="ic-rating"><em>★</em> ${rating} <span style="opacity:.6">(${reviews})</span></div>
+              </div>
+            </div>
+          </a>
+        </div>`;
+    }).join('');
   }
 
-  // Wire up events
-  search.addEventListener('input', e => { state.search = e.target.value; render(); });
-  sort.addEventListener('change', e => { state.sort = e.target.value; render(); });
-  statusSel.addEventListener('change', e => { state.status = e.target.value; render(); });
+  // Debounced search to avoid spamming the API on each keystroke.
+  function scheduleFetch(immediate) {
+    clearTimeout(fetchTimer);
+    fetchTimer = setTimeout(fetchAndRender, immediate ? 0 : 300);
+  }
+
+  search.addEventListener('input', e => { state.search = e.target.value; scheduleFetch(); });
+  sort.addEventListener('change', e => { state.sort = e.target.value; scheduleFetch(true); });
+  statusSel.addEventListener('change', e => { state.status = e.target.value; scheduleFetch(true); });
   pills.forEach(p => p.addEventListener('click', () => {
     pills.forEach(x => x.classList.remove('active'));
     p.classList.add('active');
     state.category = p.dataset.cat;
-    render();
+    scheduleFetch(true);
   }));
 
   function resetFilters(){
@@ -404,8 +425,9 @@
     search.value = ''; sort.value = 'popular'; statusSel.value = '';
     pills.forEach(x => x.classList.remove('active'));
     document.querySelector('.pill[data-cat="all"]').classList.add('active');
-    render();
+    fetchAndRender();
   }
+  window.resetFilters = resetFilters;
 
   function toggleNav(btn){
     const links = document.getElementById('navLinks');
@@ -425,8 +447,8 @@
     });
   });
 
-  // Initial render
-  render();
+  // Initial fetch — auth-gate.js will block this if not signed in
+  fetchAndRender();
 </script>
 
 </body>

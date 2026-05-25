@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Console — T0kenRent</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    .admin-wrap { max-width: 1280px; margin: 0 auto; padding: 32px clamp(20px, 4vw, 56px) 80px; }
+
+    .admin-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+    .admin-head h1 { font-family:'Syne',sans-serif; font-weight:800; font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing:-1px; margin: 0; }
+    .admin-head p { color: var(--muted); font-size: .92rem; margin: 4px 0 0; }
+    .admin-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, rgba(168,85,247,.16), rgba(0,200,255,.14));
+      border: 1px solid rgba(168,85,247,.3);
+      padding: 6px 14px; border-radius: 99px;
+      font-family:'Syne',sans-serif; font-weight: 700; font-size: .72rem;
+      letter-spacing: .12em; text-transform: uppercase; color: #C084FC;
+    }
+
+    /* Tab nav */
+    .admin-tabs {
+      display: inline-flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .admin-tab {
+      padding: 10px 18px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family:'Syne',sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+    .admin-tab.active { background: var(--cyan); color: var(--bg-deep); }
+
+    .pane { display: none; }
+    .pane.active { display: block; }
+
+    /* Stat cards */
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 22px;
+      height: 100%;
+    }
+    .stat-card .s-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+    .stat-card .s-val   { font-family:'Syne',sans-serif; font-weight: 800; font-size: 2rem; line-height: 1.1; }
+    .stat-card .s-val.c { color: var(--cyan); }
+    .stat-card .s-val.p { color: #C084FC; }
+    .stat-card .s-val.k { color: #F472B6; }
+    .stat-card .s-val.g { color: var(--success); }
+    .stat-card .s-delta { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+
+    /* Card block */
+    .card-block { background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 16px; overflow: hidden; margin-bottom: 18px; }
+    .cb-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--border-soft); gap: 12px; flex-wrap: wrap; }
+    .cb-title { font-family:'Syne',sans-serif; font-weight: 700; font-size: .95rem; margin: 0; }
+
+    .search-input {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-mid);
+      color: var(--white);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: .82rem;
+      max-width: 280px;
+    }
+
+    .tr-table-scroll { overflow-x: auto; }
+
+    .role-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .role-pill.admin { background: var(--purple-10); color: #C084FC; border: 1px solid rgba(168,85,247,.3); }
+    .role-pill.user  { background: rgba(255,255,255,.06); color: var(--soft); border: 1px solid var(--border-mid); }
+
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .row-actions .btn { font-size: .72rem; padding: 5px 10px; }
+
+    /* Loading + empty */
+    .loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: .9rem; }
+
+    /* Dispute card */
+    .dispute-row {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: start;
+    }
+    .dispute-row:last-child { border-bottom: none; }
+    .dispute-row h4 { font-family:'Syne',sans-serif; font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+    .dispute-row .meta { font-size: .76rem; color: var(--muted); margin-bottom: 10px; }
+    .dispute-row .meta strong { color: var(--white); font-weight: 600; }
+    .dispute-row .desc { font-size: .88rem; color: var(--soft); line-height: 1.6; margin-bottom: 12px; }
+
+    /* Mini chart */
+    .signup-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 120px;
+      padding: 0 4px;
+    }
+    .signup-chart .bar {
+      flex: 1;
+      background: linear-gradient(180deg, var(--cyan), rgba(0,200,255,.4));
+      border-radius: 3px 3px 0 0;
+      min-height: 4px;
+      position: relative;
+      transition: opacity .2s;
+    }
+    .signup-chart .bar:hover { opacity: .8; }
+
+    @media (max-width: 768px) {
+      .admin-wrap { padding: 20px 14px 60px; }
+      .dispute-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="tr-nav">
+  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+  <div class="nav-links ms-auto" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="how-it-works.html">How It Works</a>
+    <a href="browse.html">Browse</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="admin.html" class="active">Admin</a>
+    <a href="login.html" class="nav-cta">Login</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="admin-wrap">
+
+    <div class="admin-head">
+      <div>
+        <div class="admin-badge"> Admin Console</div>
+        <h1 class="mt-2">Platform <span class="g-text">Control</span></h1>
+        <p>Manage users, resolve disputes, and monitor platform health.</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs" role="tablist">
+      <button class="admin-tab active" onclick="switchPane('analytics',this)">Analytics</button>
+      <button class="admin-tab" onclick="switchPane('users',this)">Users</button>
+      <button class="admin-tab" onclick="switchPane('disputes',this)">Disputes</button>
+    </div>
+
+    <!-- ANALYTICS PANE -->
+    <div class="pane active" id="pane-analytics">
+      <div id="analyticsLoading" class="loading">Loading analytics…</div>
+      <div id="analyticsBody" style="display:none">
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="s-label">Total Users</div><div class="s-val c" id="aUsers">—</div><div class="s-delta" id="aUsersDelta">—</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="s-label">Active Rentals</div><div class="s-val p" id="aActive">—</div><div class="s-delta">Currently in use</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="s-label">Open Disputes</div><div class="s-val k" id="aDisputes">—</div><div class="s-delta">Needs review</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="s-label">Revenue (30d)</div><div class="s-val g" id="aRevenue">—</div><div class="s-delta" id="aRevDelta">Platform fees collected</div></div></div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-7">
+            <div class="card-block">
+              <div class="cb-header"><div class="cb-title">Signups · last 30 days</div></div>
+              <div style="padding:20px">
+                <div class="signup-chart" id="signupChart"></div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:10px;text-align:right" id="signupTotals">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="card-block">
+              <div class="cb-header"><div class="cb-title">Top Items</div></div>
+              <div class="tr-table-scroll">
+                <table class="tr-table" id="topItemsTable">
+                  <thead><tr><th>Item</th><th>Rentals</th></tr></thead>
+                  <tbody><tr><td colspan="2" style="text-align:center;color:var(--muted)">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS PANE -->
+    <div class="pane" id="pane-users">
+      <div class="card-block">
+        <div class="cb-header">
+          <h2 class="cb-title">All Users</h2>
+          <input id="userSearch" class="search-input" placeholder="Search by name, email, or $handle..." aria-label="Search users"/>
+        </div>
+        <div class="tr-table-scroll">
+          <table class="tr-table" id="usersTable">
+            <thead><tr><th>User</th><th>Email / Handle</th><th>Role</th><th>Status</th><th>Verified</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPUTES PANE -->
+    <div class="pane" id="pane-disputes">
+      <div class="card-block">
+        <div class="cb-header">
+          <h2 class="cb-title">Open Disputes</h2>
+          <select id="disputeFilter" class="search-input" style="max-width:160px">
+            <option value="open">Open</option>
+            <option value="">All</option>
+            <option value="resolved">Resolved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div id="disputesList">
+          <div class="loading">Loading disputes…</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="tr-footer">
+  <div class="f-logo">T<em>0</em>kenRent</div>
+  <small>Admin Console · Web Systems Project</small>
+  <div class="f-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+<script>
+  function toggleNav(btn){
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    btn.textContent = open ? '✕' : '☰';
+  }
+
+  // Page-level admin gate — must be admin to view
+  (async function gate() {
+    await Auth.ready();
+    if (!Auth.isAuthed()) { window.location.href = 'login.html'; return; }
+    if (!Auth.isAdmin())  {
+      document.querySelector('.admin-wrap').innerHTML = `
+        <div class="empty-state" style="margin-top:80px">
+          <div class="icon">🚫</div>
+          <h3>Admin access only</h3>
+          <p>Your account doesn't have admin privileges. If you think this is a mistake, contact the platform owner.</p>
+          <a href="dashboard.html" class="btn btn-outline-cyan px-4">Back to Dashboard</a>
+        </div>`;
+      return;
+    }
+    // Authed admin — wire nav + load analytics
+    const cta = document.querySelector('.nav-cta');
+    if (cta) {
+      cta.textContent = '⏻ ' + Auth.displayName();
+      cta.setAttribute('href', 'javascript:void(0)');
+      cta.onclick = async (e) => { e.preventDefault(); if (confirm('Sign out?')) await Auth.signOut(); };
+    }
+    loadAnalytics();
+  })();
+
+  function switchPane(name, btn) {
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('pane-' + name).classList.add('active');
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    if (name === 'users')    loadUsers();
+    if (name === 'disputes') loadDisputes();
+    if (name === 'analytics') loadAnalytics();
+  }
+
+  /* ────── ANALYTICS ────── */
+  async function loadAnalytics() {
+    try {
+      const r = await API('/api/admin/analytics');
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Failed');
+      document.getElementById('aUsers').textContent    = d.users.total.toLocaleString();
+      document.getElementById('aUsersDelta').textContent = `${d.users.active} active · ${d.users.suspended} suspended`;
+      document.getElementById('aActive').textContent   = d.rentals.active.toLocaleString();
+      document.getElementById('aDisputes').textContent = d.rentals.disputed.toLocaleString();
+      document.getElementById('aRevenue').textContent  = '₱' + (d.revenue30d.platformFees || 0).toLocaleString();
+      document.getElementById('aRevDelta').textContent = `Gross: ₱${(d.revenue30d.gross || 0).toLocaleString()}`;
+
+      // Top items table
+      const tbody = document.querySelector('#topItemsTable tbody');
+      tbody.innerHTML = (d.topItems || []).length
+        ? d.topItems.map(it => `<tr><td>${it.title}<br/><span style="font-size:.72rem;color:var(--muted)">${it.category}</span></td><td><strong>${it.count}</strong></td></tr>`).join('')
+        : `<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:30px">No completed rentals yet</td></tr>`;
+
+      // Signups chart
+      const chart = document.getElementById('signupChart');
+      const max = Math.max(1, ...(d.signupsByDay || []).map(s => s.count));
+      chart.innerHTML = (d.signupsByDay || []).map(s =>
+        `<div class="bar" style="height:${(s.count / max * 100).toFixed(1)}%" title="${s._id}: ${s.count} signups"></div>`
+      ).join('');
+      const totalSignups = (d.signupsByDay || []).reduce((a, s) => a + s.count, 0);
+      document.getElementById('signupTotals').textContent = `${totalSignups} signups across ${(d.signupsByDay || []).length} days`;
+
+      document.getElementById('analyticsLoading').style.display = 'none';
+      document.getElementById('analyticsBody').style.display = 'block';
+    } catch (err) {
+      document.getElementById('analyticsLoading').textContent = ' ' + err.message;
+    }
+  }
+
+  /* ────── USERS ────── */
+  async function loadUsers(q = '') {
+    const tbody = document.querySelector('#usersTable tbody');
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Loading…</td></tr>`;
+    try {
+      const r = await API('/api/admin/users' + (q ? '?q=' + encodeURIComponent(q) : ''));
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Failed');
+      if (!d.users.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No users found</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = d.users.map(u => `
+        <tr data-id="${u._id}">
+          <td><strong>${u.name || (u.handcashHandle || u.email || 'User').slice(0,40)}</strong></td>
+          <td style="color:var(--muted);font-size:.82rem">${u.handcashHandle || u.email || '—'}</td>
+          <td><span class="role-pill ${u.role}">${u.role}</span></td>
+          <td><span class="badge badge-${u.status === 'active' ? 'available' : u.status === 'suspended' ? 'overdue' : 'neutral'}">${u.status}</span></td>
+          <td>${u.isVerified ? '✓' : '—'}</td>
+          <td style="font-size:.78rem;color:var(--muted)">${new Date(u.createdAt).toLocaleDateString()}</td>
+          <td><div class="row-actions">
+            ${u.status === 'active'
+              ? `<button class="btn btn-ghost" onclick="updateUser('${u._id}',{status:'suspended'})">Suspend</button>`
+              : `<button class="btn btn-ghost" onclick="updateUser('${u._id}',{status:'active'})">Reactivate</button>`}
+            <button class="btn btn-ghost" onclick="updateUser('${u._id}',{isVerified:${!u.isVerified}})">${u.isVerified ? 'Unverify' : 'Verify'}</button>
+            ${u.role !== 'admin' ? `<button class="btn btn-ghost" style="color:var(--danger)" onclick="deleteUser('${u._id}')">Delete</button>` : ''}
+          </div></td>
+        </tr>`).join('');
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
+    }
+  }
+  window.updateUser = async (id, body) => {
+    try {
+      const r = await API('/api/admin/users/' + id, { method: 'PATCH', body: JSON.stringify(body) });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Failed'); }
+      loadUsers(document.getElementById('userSearch').value);
+    } catch (err) { alert(err.message); }
+  };
+  window.deleteUser = async (id) => {
+    if (!confirm('Delete this user? This is a soft delete (status set to deleted).')) return;
+    try {
+      const r = await API('/api/admin/users/' + id, { method: 'DELETE' });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Failed'); }
+      loadUsers(document.getElementById('userSearch').value);
+    } catch (err) { alert(err.message); }
+  };
+  document.getElementById('userSearch').addEventListener('input', e => {
+    clearTimeout(window._userSearchT);
+    window._userSearchT = setTimeout(() => loadUsers(e.target.value), 300);
+  });
+
+  /* ────── DISPUTES ────── */
+  async function loadDisputes() {
+    const list = document.getElementById('disputesList');
+    const status = document.getElementById('disputeFilter').value;
+    list.innerHTML = `<div class="loading">Loading disputes…</div>`;
+    try {
+      const r = await API('/api/admin/disputes' + (status ? '?status=' + status : ''));
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Failed');
+      if (!d.disputes.length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><h3>No disputes</h3><p>Nothing to resolve right now.</p></div>`;
+        return;
+      }
+      list.innerHTML = d.disputes.map(dp => {
+        const opened = dp.openedBy ? (dp.openedBy.handcashHandle || dp.openedBy.email || dp.openedBy.name) : 'Unknown';
+        const against = dp.against ? (dp.against.handcashHandle || dp.against.email || dp.against.name) : 'Unknown';
+        const deposit = dp.rental ? dp.rental.securityDeposit : 0;
+        return `
+        <div class="dispute-row">
+          <div>
+            <h4>${dp.type.replace('_',' ').toUpperCase()} <span class="badge badge-${dp.status === 'open' ? 'overdue' : 'completed'}" style="margin-left:6px">${dp.status}</span></h4>
+            <div class="meta">Opened by <strong>${opened}</strong> against <strong>${against}</strong> · ${new Date(dp.createdAt).toLocaleDateString()}</div>
+            <div class="desc">${dp.description}</div>
+            ${dp.evidence && dp.evidence.length ? `<div style="display:flex;gap:6px">${dp.evidence.map(e => `<img src="${e.url}" alt="Evidence" style="width:72px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--border-mid)"/>`).join('')}</div>` : ''}
+          </div>
+          ${dp.status === 'open' ? `
+            <div class="row-actions" style="flex-direction:column;align-items:flex-end">
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px">Deposit ₱${deposit.toLocaleString()}</div>
+              <button class="btn btn-primary" onclick="resolveDispute('${dp._id}','owner',${deposit})">Release to Owner</button>
+              <button class="btn btn-primary" onclick="resolveDispute('${dp._id}','renter',${deposit})">Release to Renter</button>
+              <button class="btn btn-outline-cyan" onclick="splitDispute('${dp._id}',${deposit})">Split…</button>
+            </div>` : `
+            <div style="font-size:.78rem;color:var(--muted);text-align:right">
+              ${dp.resolvedAt ? 'Resolved ' + new Date(dp.resolvedAt).toLocaleDateString() : ''}
+            </div>`}
+        </div>`;
+      }).join('');
+    } catch (err) {
+      list.innerHTML = `<div class="loading" style="color:var(--danger)">${err.message}</div>`;
+    }
+  }
+  window.resolveDispute = async (id, releaseTo, deposit) => {
+    const notes = prompt('Optional admin notes:') || '';
+    try {
+      const r = await API('/api/admin/disputes/' + id + '/resolve', {
+        method: 'PATCH',
+        body: JSON.stringify({ releaseTo, adminNotes: notes }),
+      });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Failed'); }
+      loadDisputes();
+    } catch (err) { alert(err.message); }
+  };
+  window.splitDispute = async (id, deposit) => {
+    const ownerShare = parseInt(prompt(`Owner gets how much of ₱${deposit}? (Renter gets the rest)`, Math.round(deposit / 2)));
+    if (!Number.isFinite(ownerShare) || ownerShare < 0 || ownerShare > deposit) return alert('Invalid amount.');
+    try {
+      const r = await API('/api/admin/disputes/' + id + '/resolve', {
+        method: 'PATCH',
+        body: JSON.stringify({ releaseTo: 'split', ownerShare }),
+      });
+      if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Failed'); }
+      loadDisputes();
+    } catch (err) { alert(err.message); }
+  };
+  document.getElementById('disputeFilter').addEventListener('change', loadDisputes);
+</script>
+
+</body>
+</html>
