@@ -540,20 +540,20 @@
       const statusBadge = `<span class="badge badge-${r.status === 'completed' ? 'completed' : r.status === 'overdue' ? 'overdue' : r.status === 'pending' ? 'pending' : 'rented'}">${r.status}</span>`;
       let actions = '';
       if (mode === 'owner' && r.status === 'pending') {
-        actions = `<button class="btn btn-primary btn-sm" onclick="acceptRental('${r._id}')">Accept</button>
-                   <button class="btn btn-ghost btn-sm" onclick="declineRental('${r._id}')">Decline</button>`;
+        actions = `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();acceptRental('${r._id}')">Accept</button>
+                 <button class="btn btn-ghost btn-sm"   onclick="event.stopPropagation();declineRental('${r._id}')">Decline</button>`;
       } else if (mode === 'owner' && ['accepted','active','overdue'].includes(r.status)) {
-        actions = `<button class="btn btn-ghost btn-sm" onclick="returnRental('${r._id}')">Mark Returned</button>`;
+        actions = `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();returnRental('${r._id}')">Mark Returned</button>`;
       } else {
-        actions = `<a class="btn btn-ghost btn-sm" href="item-detail.html?id=${r.item && r.item._id || ''}">View</a>`;
+        actions = `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openRentalModal('${r._id}')">Details</button>`;
       }
-      return `<tr>
-        <td>${itemCell(r.item, '₱' + r.dailyRate + '/day')}</td>
-        <td style="color:var(--muted);font-size:.82rem">${counterpartyName(other)}</td>
-        <td style="font-size:.82rem">${fmtRange(r.startDate, r.endDate)}</td>
-        <td>${statusBadge}</td>
-        <td>${actions}</td>
-      </tr>`;
+      return `<tr onclick="openRentalModal('${r._id}')" style="cursor:pointer">
+      <td>${itemCell(r.item, '₱' + r.dailyRate + '/day')}</td>
+      <td style="color:var(--muted);font-size:.82rem">${counterpartyName(other)}</td>
+      <td style="font-size:.82rem">${fmtRange(r.startDate, r.endDate)}</td>
+      <td>${statusBadge}</td>
+      <td onclick="event.stopPropagation()">${actions}</td>
+    </tr>`;
     }).join('');
   }
 
