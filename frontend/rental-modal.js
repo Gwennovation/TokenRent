@@ -267,8 +267,150 @@ async function rdmCopyHash(hash) {
   } catch (e) { /* clipboard not available */ }
 }
 
+/* ── Chat tab ────────────────────────────────────────────────── */
+async function _rdmLoadChat() {
+  if (!_rdmRental) return;
+  const r  = _rdmRental;
+  const it = r.item || {};
+  const el = _$('rdmChatContent');
+
+  el.innerHTML = `
+    <div class="rdm-chat-ctx">${_esc(it.title || 'Item')} · ${_fmtDate(r.startDate)} – ${_fmtDate(r.endDate)}</div>
+    <div class="rdm-chat-wrap">
+      <div class="rdm-chat-head">
+        <button class="rdm-chat-refresh" onclick="_rdmRefreshChat()">↻ Refresh</button>
+      </div>
+      <div class="rdm-thread" id="rdmThread"></div>
+      <div class="rdm-chat-input">
+        <input id="rdmMsgInput" type="text" placeholder="Type a message…" maxlength="1000"
+               onkeydown="if(event.key==='Enter')rdmSendMessage()"/>
+        <button class="btn btn-primary btn-sm" onclick="rdmSendMessage()">Send</button>
+      </div>
+      <div class="rdm-chat-err" id="rdmChatErr"></div>
+    </div>
+  `;
+  await _rdmRefreshChat();
+}
+
+async function _rdmRefreshChat() {
+  const thread = _$('rdmThread');
+  if (!thread || !_rdmId) return;
+  try {
+    const res  = await fetch(`/api/rentals/${_rdmId}/messages`, { credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load messages');
+    _rdmRenderThread(data.messages);
+  } catch (err) {
+    thread.innerHTML = `<div class="rdm-thread-empty" style="color:var(--danger)">${_esc(err.message)}</div>`;
+  }
+}
+
+function _rdmRenderThread(messages) {
+  const thread = _$('rdmThread');
+  if (!thread) return;
+  if (!messages.length) {
+    thread.innerHTML = '<div class="rdm-thread-empty">No messages yet. Send the first one.</div>';
+    return;
+  }
+  const me = Auth.get();
+  const myId = me ? me._id : null;
+  const fmtTS = d => new Date(d).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+
+  thread.innerHTML = messages.map(msg => {
+    const senderId = msg.sender ? (msg.sender._id || msg.sender) : null;
+    const isMine   = myId && senderId && myId === senderId;
+    const name     = msg.sender ? (msg.sender.handcashHandle || msg.sender.name || 'User') : 'User';
+    return `
+      <div class="rdm-bw${isMine ? ' mine' : ''}">
+        ${!isMine ? `<div class="rdm-b-sender">${_esc(name)}</div>` : ''}
+        <div class="rdm-bubble ${isMine ? 'mine' : 'theirs'}">${_esc(msg.text)}</div>
+        <div class="rdm-b-ts">${fmtTS(msg.createdAt)}</div>
+      </div>`;
+  }).join('');
+
+  thread.scrollTop = thread.scrollHeight;
+}
+
+async function rdmSendMessage() {
+  const input = _$('rdmMsgInput');
+  const errEl = _$('rdmChatErr');
+  if (!input || !_rdmId) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (errEl) errEl.style.display = 'none';
+
+  // Optimistic UI — append immediately
+  const thread = _$('rdmThread');
+  const emptyEl = thread && thread.querySelector('.rdm-thread-empty');
+  if (emptyEl) emptyEl.remove();
+  const fmtTS = d => new Date(d).toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+  if (thread) {
+    thread.insertAdjacentHTML('beforeend', `
+      <div class="rdm-bw mine">
+        <div class="rdm-bubble mine">${_esc(text)}</div>
+        <div class="rdm-b-ts">${fmtTS(new Date())}</div>
+      </div>`);
+    thread.scrollTop = thread.scrollHeight;
+  }
+  input.value = '';
+
+  try {
+    const res = await fetch(`/api/rentals/${_rdmId}/messages`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Send failed');
+    await _rdmRefreshChat(); // replace optimistic with server-confirmed version
+  } catch (err) {
+    if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+    if (input)  input.value = text; // restore unsent text
+  }
+}
+
+/* ── Action handler (accept / decline / cancel / return) ─────── */
+async function rdmAction(rentalId, action) {
+  const confirmMsgs = {
+    decline: 'Decline this booking request?',
+    cancel:  'Cancel this booking?',
+    return:  'Confirm the item has been returned and release the deposit?',
+  };
+  if (confirmMsgs[action] && !confirm(confirmMsgs[action])) return;
+
+  try {
+    const res  = await fetch(`/api/rentals/${rentalId}/${action}`, {
+      method: 'PATCH', credentials: 'include',
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Action failed');
+
+    // Reload rental data and re-render Overview
+    const res2  = await fetch(`/api/rentals/${rentalId}`, { credentials: 'include' });
+    const data2 = await res2.json();
+    if (res2.ok) {
+      _rdmRental = data2.rental;
+      _rdmRenderHeader();
+      _rdmRenderOverview();
+    }
+
+    // Refresh dashboard tables so counts update
+    if (typeof loadStats    === 'function') loadStats();
+    if (typeof loadOverview === 'function') loadOverview();
+    if (typeof loadPending  === 'function') loadPending();
+    if (typeof loadMyItems  === 'function') loadMyItems();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
 /* ── Expose globals ──────────────────────────────────────────── */
 window.openRentalModal  = openRentalModal;
 window.closeRentalModal = closeRentalModal;
 window.rdmSwitchTab     = rdmSwitchTab;
 window.rdmCopyHash      = rdmCopyHash;
+window.rdmSendMessage   = rdmSendMessage;
+window.rdmAction        = rdmAction;
+window._rdmRefreshChat  = _rdmRefreshChat;
