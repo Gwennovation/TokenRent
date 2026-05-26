@@ -278,6 +278,10 @@ async function openItemPanel(itemId) {
   document.getElementById('ipTotal').textContent = '—';
   document.getElementById('ipBookErr').style.display    = 'none';
   document.getElementById('ipBookSuccess').style.display = 'none';
+  const startEl = document.getElementById('ipStart');
+  const endEl   = document.getElementById('ipEnd');
+  if (startEl) startEl.value = '';
+  if (endEl)   endEl.value   = '';
 
   try {
     const res  = await fetch(`/api/items/${itemId}`, { credentials: 'include' });
@@ -337,7 +341,7 @@ function ipCalcTotal() {
   const totalEl = document.getElementById('ipTotal');
   if (!s || !e) { totalEl.textContent = '—'; return; }
   const days = Math.round((new Date(e) - new Date(s)) / 86400000);
-  if (days <= 0) { totalEl.textContent = 'Invalid range'; return; }
+  if (days <= 0 || isNaN(days)) { totalEl.textContent = 'Invalid range'; return; }
   const subtotal = days * _ipDailyRate;
   const deposit  = _ipItem ? (_ipItem.securityDeposit || 0) : 0;
   totalEl.textContent = fmt$(subtotal + deposit) + ` (${days}d + deposit)`;
