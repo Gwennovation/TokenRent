@@ -16,6 +16,10 @@ const errorHandler   = require('./middleware/error.middleware');
 // --- App init ----------------------------------------------------------
 const app = express();
 
+// Trust the first proxy (Vercel) so express-rate-limit can read
+// X-Forwarded-For without throwing ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+app.set('trust proxy', 1);
+
 // --- Connect MongoDB (idempotent — safe under serverless cold starts) ---
 connectDB();
 

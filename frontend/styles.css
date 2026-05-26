@@ -166,6 +166,66 @@ p { margin: 0; }
 }
 .nav-cta:hover { opacity: .85 !important; }
 
+/* Authenticated user pill (replaces Login CTA) */
+.nav-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  background: rgba(0,200,255,.08);
+  border: 1px solid rgba(0,200,255,.2);
+  border-radius: 999px;
+  margin-left: 4px;
+  max-width: 260px;
+  overflow: hidden;
+}
+.nav-av {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--cyan);
+  color: #0B0B12;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: .65rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+.nav-user-name {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+.nav-admin-badge {
+  font-size: .6rem;
+  font-weight: 700;
+  background: rgba(0,200,255,.15);
+  color: var(--cyan);
+  border: 1px solid rgba(0,200,255,.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-logout-btn {
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-family: 'DM Sans', sans-serif;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color .15s, border-color .15s;
+}
+.nav-logout-btn:hover { color: var(--white); border-color: rgba(255,255,255,.3); }
+
 /* Hamburger — hidden on desktop */
 .nav-toggle {
   display: none;
@@ -819,27 +879,55 @@ p { margin: 0; }
   transition: flex .25s ease;
 }
 
-/* -- Item detail panel -- */
+/* -- Item detail modal overlay -- */
 #itemPanel {
-  width: 0;
-  overflow: hidden;
-  flex-shrink: 0;
-  border-left: 1px solid rgba(0,200,255,.15);
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  pointer-events: none;
+  transition: background .2s, backdrop-filter .2s;
+}
+#appMain.panel-open #itemPanel {
+  background: rgba(0, 0, 0, .65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: all;
+}
+.ip-modal {
   background: var(--bg-card);
-  transition: width .25s ease;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  transform: translateY(16px) scale(.97);
+  opacity: 0;
+  transition: transform .22s ease, opacity .22s ease;
 }
-#appMain.panel-open #itemPanel { width: 400px; }
+#appMain.panel-open .ip-modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
 
 .ip-photo {
-  width: 100%; height: 180px;
+  width: 100%; height: 220px;
   object-fit: cover; display: block;
   background: var(--bg-surface);
   flex-shrink: 0;
 }
 .ip-photo-placeholder {
-  width: 100%; height: 180px;
+  width: 100%; height: 220px;
   background: var(--bg-surface);
   display: flex; align-items: center; justify-content: center;
   color: var(--muted); font-size: .8rem; flex-shrink: 0;
@@ -888,6 +976,9 @@ p { margin: 0; }
   border-top: 1px solid var(--border-soft);
   padding-top: 14px;
   display: flex; flex-direction: column; gap: 10px;
+}
+.ip-booking-dates {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
 }
 .ip-booking label { font-size: .72rem; color: var(--muted); display: block; margin-bottom: 4px; }
 .ip-booking input[type=date] {
@@ -943,9 +1034,7 @@ p { margin: 0; }
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 14px;
 }
-#appMain.panel-open .browse-grid {
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-}
+/* browse grid stays full-width — item panel is a modal overlay now */
 
 /* Skeleton loading */
 .ic-skeleton {
@@ -964,12 +1053,11 @@ p { margin: 0; }
 #listView { padding: 0; }
 #listFormContainer { padding: 24px; max-width: 720px; }
 
-/* Mobile panel: full-screen overlay */
-@media (max-width: 768px) {
-  #appMain.panel-open #itemPanel {
-    position: fixed; inset: 0; width: 100%; z-index: 900;
-    border-left: none;
-  }
+/* Mobile: modal fills more of the screen */
+@media (max-width: 600px) {
+  #itemPanel { padding: 12px; }
+  .ip-modal { max-height: 92vh; }
+  .ip-booking-dates { grid-template-columns: 1fr; }
 }
 /* =====================================================================
    ITEM CARD (browse grid — shared between browse shell and any future grid)

@@ -375,7 +375,7 @@ async function ipBook() {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item: _ipItem._id, startDate, endDate }),
+      body: JSON.stringify({ itemId: _ipItem._id, startDate, endDate }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Booking failed');
