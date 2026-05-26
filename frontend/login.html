@@ -264,15 +264,14 @@
 </head>
 <body>
 
-<nav class="tr-nav">
-  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
-  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
-  <div class="nav-links ms-auto" id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="browse.html">Browse</a>
-    <a href="list-item.html">List Item</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="login.html" class="active">Login</a>
+<nav class="tr-nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+    </div>
   </div>
 </nav>
 
@@ -439,6 +438,24 @@
   </div>
 </div>
 
+<footer class="tr-footer">
+  <div class="f-inner">
+    <div class="f-brand">
+      <div class="f-logo">T<em>0</em>kenRent</div>
+      <p>The peer-to-peer rental marketplace for cameras, tools, vehicles, and more.</p>
+    </div>
+    <div class="f-links">
+      <a href="how-it-works.html">How It Works</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="login.html" class="f-cta">Login / Sign up</a>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <span>© 2026 T0kenRent. All rights reserved.</span>
+    <span class="f-badge"><span class="f-badge-dot"></span>Blockchain-verified rentals</span>
+  </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="auth.js"></script>
 <script>
@@ -541,12 +558,32 @@
     } catch (err) { showError(err.message, 'signup'); }
   });
 
-  function toggleNav(btn){
-    const links = document.getElementById('navLinks');
-    const open = links.classList.toggle('open');
+  function toggleNav(btn) {
+    var links = document.getElementById('navLinks');
+    var open = links.classList.toggle('open');
     btn.setAttribute('aria-expanded', open);
     btn.textContent = open ? '✕' : '☰';
   }
+  document.querySelectorAll('#navLinks a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      var links = document.getElementById('navLinks');
+      var btn = document.querySelector('.nav-toggle');
+      if (links && links.classList.contains('open')) {
+        links.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.textContent = '☰';
+      }
+    });
+  });
+
+  // Floating nav scroll tint
+  (function() {
+    var nav = document.getElementById('mainNav');
+    if (!nav) return;
+    window.addEventListener('scroll', function() {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+  })();
 </script>
 
 </body>
