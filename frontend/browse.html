@@ -210,7 +210,8 @@
 <body>
   <script>
     // Browsing is now part of the authenticated shell.
-    location.replace('dashboard.html#browse');
+    // Forward any ?cat= query string into the hash so filters survive the redirect.
+    location.replace('dashboard.html#browse' + location.search);
   </script>
 </body>
 </html>
