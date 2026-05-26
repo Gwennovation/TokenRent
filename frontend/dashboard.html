@@ -442,27 +442,28 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label" for="setName">Display Name</label>
-              <input id="setName" class="form-control" value="Isaac Quicho"/>
+              <input id="setName" class="form-control" placeholder="Your name"/>
             </div>
             <div class="col-md-6">
-              <label class="form-label" for="setEmail">Email</label>
-              <input id="setEmail" class="form-control" type="email" value="isaac@example.com"/>
+              <label class="form-label" for="setEmail">Email <span style="font-size:.72rem;color:var(--muted)">(read-only)</span></label>
+              <input id="setEmail" class="form-control" type="email" readonly style="opacity:.55;cursor:default"/>
             </div>
             <div class="col-md-6">
               <label class="form-label" for="setLocation">Location</label>
-              <input id="setLocation" class="form-control" value="Makati City"/>
+              <input id="setLocation" class="form-control" placeholder="e.g. Makati City"/>
             </div>
             <div class="col-md-6">
-              <label class="form-label" for="setRole">Role</label>
-              <select id="setRole" class="form-select">
-                <option>Owner + Renter</option>
-                <option>Owner Only</option>
-                <option>Renter Only</option>
-              </select>
+              <label class="form-label" for="setHandCash">HandCash Handle</label>
+              <input id="setHandCash" class="form-control" readonly style="opacity:.55;cursor:default" placeholder="Connect HandCash to set"/>
             </div>
-            <div class="col-12 d-flex gap-2 mt-2">
-              <button class="btn btn-primary" onclick="alert('Settings saved.')">Save Changes</button>
-              <button class="btn btn-ghost">Cancel</button>
+            <div class="col-12">
+              <label class="form-label" for="setBio">Bio <span style="font-size:.72rem;color:var(--muted)">(optional)</span></label>
+              <textarea id="setBio" class="form-control" rows="3" maxlength="300" placeholder="Tell renters a little about yourself…"></textarea>
+            </div>
+            <div class="col-12 d-flex align-items-center gap-2 mt-2 flex-wrap">
+              <button class="btn btn-primary" id="setSubmitBtn" onclick="saveSettings()">Save Changes</button>
+              <button class="btn btn-ghost" onclick="loadSettings()">Cancel</button>
+              <span id="setMsg" style="font-size:.8rem;display:none"></span>
             </div>
           </div>
         </div>
@@ -740,18 +741,61 @@
     if (name === 'requests') loadPending();
     if (name === 'items')    loadMyItems();
     if (name === 'history')  loadHistory();
-    if (name === 'settings') {
-      const u = Auth.get();
-      if (u) {
-        const nameEl = document.getElementById('setName');
-        const emailEl = document.getElementById('setEmail');
-        const locEl = document.getElementById('setLocation');
-        if (nameEl) nameEl.value = u.name || u.handcashHandle || '';
-        if (emailEl) emailEl.value = u.email || '';
-        if (locEl) locEl.value = u.location || '';
-      }
-    }
+    if (name === 'settings') loadSettings();
   }
+
+  // ─── Settings: load from live auth state ───────────────────────────
+  function loadSettings() {
+    const u = Auth.get();
+    if (!u) return;
+    const v = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    v('setName',     u.name || '');
+    v('setEmail',    u.email || '');
+    v('setLocation', u.location || '');
+    v('setHandCash', u.handcashHandle || '');
+    v('setBio',      u.bio || '');
+    const msg = document.getElementById('setMsg');
+    if (msg) msg.style.display = 'none';
+  }
+  window.loadSettings = loadSettings;
+
+  // ─── Settings: save to PATCH /api/users/me ─────────────────────────
+  window.saveSettings = async function() {
+    const btn = document.getElementById('setSubmitBtn');
+    const msg = document.getElementById('setMsg');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    if (msg) msg.style.display = 'none';
+    try {
+      const body = {
+        name:     (document.getElementById('setName')?.value     || '').trim(),
+        location: (document.getElementById('setLocation')?.value || '').trim(),
+        bio:      (document.getElementById('setBio')?.value      || '').trim(),
+      };
+      const r = await fetch('/api/users/me', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Save failed');
+      // Refresh cached auth so nav pill and sidebar reflect new name
+      await Auth.refresh();
+      if (msg) {
+        msg.textContent = 'Changes saved.';
+        msg.style.color = 'var(--success)';
+        msg.style.display = 'inline';
+      }
+    } catch (err) {
+      if (msg) {
+        msg.textContent = err.message;
+        msg.style.color = 'var(--danger)';
+        msg.style.display = 'inline';
+      }
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Save Changes'; }
+    }
+  };
 
   function toggleSidebar(){
     document.getElementById('dashSide').classList.toggle('open');
