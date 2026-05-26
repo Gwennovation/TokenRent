@@ -953,4 +953,61 @@ p { margin: 0; }
     border-left: none;
   }
 }
+/* =====================================================================
+   ITEM CARD (browse grid — shared between browse shell and any future grid)
+   ===================================================================== */
+.item-card {
+  background: var(--bg-card); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+  height: 100%; display: flex; flex-direction: column; cursor: pointer;
+}
+.item-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,200,255,.3);
+  box-shadow: var(--shadow-pop);
+}
+.item-card .ic-img {
+  height: 180px;
+  background: linear-gradient(135deg, #1C1C2E, #2A1A3E);
+  position: relative; overflow: hidden;
+}
+.item-card .ic-img img {
+  width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease;
+}
+.item-card:hover .ic-img img { transform: scale(1.06); }
+.item-card .ic-img::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(11,11,18,.5) 100%);
+  pointer-events: none;
+}
+.item-card .ic-badge { position: absolute; top: 12px; right: 12px; }
+.item-card .ic-body {
+  padding: 18px; display: flex; flex-direction: column; flex: 1;
+}
+.item-card .ic-cat {
+  font-size: .68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em; font-weight: 700; margin-bottom: 6px;
+}
+.item-card .ic-title {
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 1rem; margin-bottom: 4px; line-height: 1.3;
+}
+.item-card .ic-owner { font-size: .76rem; color: var(--muted); margin-bottom: 14px; }
+.item-card .ic-foot {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-soft);
+}
+.item-card .ic-price {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--cyan);
+}
+.item-card .ic-price span {
+  font-size: .68rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 400;
+}
+.item-card .ic-rating { font-size: .76rem; color: var(--muted); }
+.item-card .ic-rating em { color: #FFC000; font-style: normal; }
+
+/* Dashboard shell: no top-nav offset */
+.dash-shell .page { padding-top: 0; }
+
 .rdm-chat-err { color: var(--danger); font-size: .74rem; margin-top: 6px; display: none; }

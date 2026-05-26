@@ -229,7 +229,7 @@
 <body>
 
 
-<div class="page">
+<div class="page dash-shell">
   <div class="dash-layout">
 
     <!-- SIDEBAR -->
@@ -701,7 +701,8 @@
       loadStats().then(stats => {
         if (stats) {
           const bp = document.getElementById('navBadgeRequests');
-          if (bp && stats.pendingRequests > 0) bp.textContent = stats.pendingRequests;
+          if (bp && stats.pendingRequests > 0) { bp.textContent = stats.pendingRequests; bp.style.display = 'inline-block'; }
+          else if (bp) { bp.style.display = 'none'; }
         }
       });
       loadOverview();

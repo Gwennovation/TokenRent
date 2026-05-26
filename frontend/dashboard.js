@@ -72,7 +72,7 @@ async function loadView(view, params) {
 
     case 'rentals':
       _showTab('rentals');
-      if (typeof loadMyRentals === 'function') loadMyRentals();
+      if (typeof loadAllRentals === 'function') loadAllRentals();
       else if (typeof loadOverview === 'function') loadOverview();
       break;
 
@@ -89,6 +89,7 @@ async function loadView(view, params) {
 
     case 'history':
       _showTab('history');
+      if (typeof loadHistory === 'function') loadHistory();
       break;
 
     case 'messages':
