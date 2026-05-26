@@ -116,5 +116,150 @@ Auth.ready().then(() => {
   loadView(view, params);
 });
 
+/* ── Browse state ────────────────────────────────────────────── */
+const _bState = { search: '', sort: 'popular', status: '', category: 'all' };
+let _bTimer = null;
+
+/* ── Browse view loader ──────────────────────────────────────── */
+async function loadBrowseView(params) {
+  const header = document.getElementById('browseHeader');
+  const grid   = document.getElementById('browseGrid');
+
+  // Render search bar + filters (idempotent — only build once)
+  if (!header.dataset.built) {
+    header.dataset.built = '1';
+    header.innerHTML = `
+      <div style="padding:20px 24px 0">
+        <div class="browse-header">
+          <input class="browse-search" id="bSearch" type="search"
+                 placeholder="Search cameras, tools, vehicles…"
+                 value="${_esc(_bState.search)}"
+                 oninput="_bSchedule()"/>
+          <select class="browse-select" id="bSort" onchange="_bSortChange(this.value)">
+            <option value="popular"   ${_bState.sort==='popular'   ?'selected':''}>Popular</option>
+            <option value="newest"    ${_bState.sort==='newest'    ?'selected':''}>Newest</option>
+            <option value="price-low" ${_bState.sort==='price-low' ?'selected':''}>Price ↑</option>
+            <option value="price-high"${_bState.sort==='price-high'?'selected':''}>Price ↓</option>
+          </select>
+        </div>
+        <div class="browse-pills" id="bPills">
+          ${['all','construction','electronics','photography','outdoor','vehicles','events','other'].map(c =>
+            `<button class="browse-pill${_bState.category===c?' active':''}"
+                     onclick="_bSetCat('${c}')">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`
+          ).join('')}
+        </div>
+        <div class="browse-result-count" id="bCount"></div>
+      </div>`;
+  }
+
+  // Render grid area
+  grid.innerHTML = `<div class="browse-grid" id="bGrid"></div>`;
+
+  // If URL has ?item=ID, open panel after loading
+  const itemId = params && params.get('item');
+
+  await _bFetch();
+
+  if (itemId) openItemPanel(itemId);
+}
+
+function _bSchedule() {
+  clearTimeout(_bTimer);
+  _bState.search = document.getElementById('bSearch')?.value || '';
+  _bTimer = setTimeout(_bFetch, 300);
+}
+
+function _bSortChange(val) {
+  _bState.sort = val;
+  _bFetch();
+}
+
+function _bSetCat(cat) {
+  _bState.category = cat;
+  document.querySelectorAll('.browse-pill').forEach(p =>
+    p.classList.toggle('active', p.textContent.toLowerCase() === cat ||
+    (cat === 'all' && p.textContent.toLowerCase() === 'all'))
+  );
+  _bFetch();
+}
+
+async function _bFetch() {
+  const grid = document.getElementById('bGrid');
+  if (!grid) return;
+
+  // Skeleton
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="ic-skeleton">
+      <div class="ic-skeleton-img"></div>
+      <div class="ic-skeleton-line"></div>
+      <div class="ic-skeleton-line short"></div>
+    </div>`).join('');
+
+  const p = new URLSearchParams();
+  if (_bState.category && _bState.category !== 'all') p.set('category', _bState.category);
+  if (_bState.status)  p.set('status', _bState.status);
+  if (_bState.search)  p.set('q', _bState.search);
+  if (_bState.sort)    p.set('sort', _bState.sort);
+
+  try {
+    const res  = await fetch('/api/items?' + p.toString(), { credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load items');
+    const items = data.items || data || [];
+    _bRender(items);
+  } catch (err) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)">
+      ${_esc(err.message)}
+      <br/><br/>
+      <button class="btn btn-ghost btn-sm" onclick="_bFetch()">Retry</button>
+    </div>`;
+  }
+}
+
+function _bRender(items) {
+  const grid  = document.getElementById('bGrid');
+  const count = document.getElementById('bCount');
+  if (!grid) return;
+  if (count) count.textContent = items.length ? `${items.length} item${items.length!==1?'s':''} found` : '';
+
+  if (!items.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0">
+      <div style="color:var(--muted);margin-bottom:12px">No items found.</div>
+      <button class="btn btn-ghost btn-sm" onclick="_bSetCat('all')">Clear filters</button>
+    </div>`;
+    return;
+  }
+
+  const statusCls = { available:'badge-completed', rented:'badge-rented', overdue:'badge-overdue', unavailable:'badge-overdue' };
+
+  grid.innerHTML = items.map(it => {
+    const cover = (it.photos && it.photos[0] && it.photos[0].url) ||
+                  `https://picsum.photos/seed/${it.category||'item'}-${it._id}/400/300`;
+    const owner = it.owner ? (it.owner.handcashHandle || it.owner.name || '') : '';
+    return `
+      <div class="item-card" onclick="openItemPanel('${_esc(it._id)}')" style="cursor:pointer">
+        <div class="ic-img">
+          <img src="${_esc(cover)}" alt="${_esc(it.title)}" loading="lazy" onerror="this.style.display='none'"/>
+          <span class="ic-badge badge ${statusCls[it.status]||'badge-pending'}">${_esc(it.status)}</span>
+        </div>
+        <div class="ic-body">
+          <div class="ic-cat">${_esc(it.category||'')}</div>
+          <div class="ic-title">${_esc(it.title)}</div>
+          <div class="ic-owner">${_esc(owner)}</div>
+          <div class="ic-foot">
+            <span class="ic-price">${fmt$(it.dailyRate)}/day</span>
+            <span class="ic-rating">
+              ★ ${it.stats?.rating ? it.stats.rating.toFixed(1) : '—'}
+            </span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 /* ── Expose globals ──────────────────────────────────────────── */
-window.navigate = navigate;
+window.navigate    = navigate;
+window._bSchedule  = _bSchedule;
+window._bSortChange = _bSortChange;
+window._bSetCat    = _bSetCat;
+window._bFetch     = _bFetch;
