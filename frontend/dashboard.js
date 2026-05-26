@@ -98,6 +98,7 @@ async function loadView(view, params) {
 
     case 'settings':
       _showTab('settings');
+      if (typeof loadSettings === 'function') loadSettings();
       break;
 
     default:

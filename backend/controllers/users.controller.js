@@ -11,7 +11,7 @@ exports.me = async (req, res) => res.json({ user: req.user });
 /* ---------- PATCH /api/users/me ---------- */
 exports.updateMe = async (req, res, next) => {
   try {
-    const editable = ['name', 'location', 'bio', 'avatar'];
+    const editable = ['name', 'location', 'bio', 'avatar', 'handcashHandle'];
     for (const k of editable) if (k in req.body) req.user[k] = req.body[k];
     await req.user.save();
     res.json({ user: req.user });

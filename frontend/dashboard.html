@@ -454,7 +454,7 @@
             </div>
             <div class="col-md-6">
               <label class="form-label" for="setHandCash">HandCash Handle</label>
-              <input id="setHandCash" class="form-control" readonly style="opacity:.55;cursor:default" placeholder="Connect HandCash to set"/>
+              <input id="setHandCash" class="form-control" placeholder="e.g. $yourhandle"/>
             </div>
             <div class="col-12">
               <label class="form-label" for="setBio">Bio <span style="font-size:.72rem;color:var(--muted)">(optional)</span></label>
@@ -766,10 +766,12 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
     if (msg) msg.style.display = 'none';
     try {
+      const handle = (document.getElementById('setHandCash')?.value || '').trim();
       const body = {
-        name:     (document.getElementById('setName')?.value     || '').trim(),
-        location: (document.getElementById('setLocation')?.value || '').trim(),
-        bio:      (document.getElementById('setBio')?.value      || '').trim(),
+        name:           (document.getElementById('setName')?.value     || '').trim(),
+        location:       (document.getElementById('setLocation')?.value || '').trim(),
+        bio:            (document.getElementById('setBio')?.value      || '').trim(),
+        handcashHandle: handle || undefined,
       };
       const r = await fetch('/api/users/me', {
         method: 'PATCH',
