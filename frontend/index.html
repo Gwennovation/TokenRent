@@ -273,16 +273,15 @@
 <body>
 
 <!-- NAV -->
-<nav class="tr-nav">
-  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
-  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks" onclick="toggleNav(this)">☰</button>
-  <div class="nav-links ms-auto" id="navLinks">
-    <a href="index.html" class="active">Home</a>
-    <a href="how-it-works.html">How It Works</a>
-    <a href="browse.html">Browse</a>
-    <a href="list-item.html">List Item</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="login.html" class="nav-cta">Login</a>
+<nav class="tr-nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="login.html" class="nav-cta">Login</a>
+    </div>
   </div>
 </nav>
 
@@ -297,8 +296,8 @@
   <p class="lead">A peer-to-peer equipment rental platform that eliminates informal arrangements — centralized, automated, and fully trackable.</p>
 
   <div class="hero-ctas">
-    <a href="browse.html" class="btn btn-primary px-4 py-3">Browse Equipment</a>
-    <a href="list-item.html" class="btn btn-outline-cyan px-4 py-3">List Your Item</a>
+    <a href="dashboard.html#browse" class="btn btn-primary px-4 py-3">Browse Equipment</a>
+    <a href="dashboard.html#list" class="btn btn-outline-cyan px-4 py-3">List Your Item</a>
   </div>
 
   <div class="hero-stats">
@@ -418,13 +417,20 @@
 
 <!-- FOOTER -->
 <footer class="tr-footer">
-  <div class="f-logo">T<em>0</em>kenRent</div>
-  <small>Blockchain-Based Smart Rental · Web Systems · HTML · CSS · JS · Bootstrap 5</small>
-  <div class="f-links">
-    <a href="browse.html">Browse</a>
-    <a href="list-item.html">List Item</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="login.html">Login</a>
+  <div class="f-inner">
+    <div class="f-brand">
+      <div class="f-logo">T<em>0</em>kenRent</div>
+      <p>The peer-to-peer rental marketplace for cameras, tools, vehicles, and more.</p>
+    </div>
+    <div class="f-links">
+      <a href="how-it-works.html">How It Works</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="login.html" class="f-cta">Login / Sign up</a>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <span>© 2026 T0kenRent. All rights reserved.</span>
+    <span class="f-badge"><span class="f-badge-dot"></span>Blockchain-verified rentals</span>
   </div>
 </footer>
 
@@ -435,32 +441,38 @@
   document.addEventListener('DOMContentLoaded', () => {
     Auth.ready().then(user => {
       if (user) {
-        // Logged-in users go straight to the app shell
         window.location.replace('dashboard.html#browse');
         return;
       }
-      // Not logged in — stay on landing page (no action needed)
     });
   });
 
-  function toggleNav(btn){
-    const links = document.getElementById('navLinks');
-    const open = links.classList.toggle('open');
+  function toggleNav(btn) {
+    var links = document.getElementById('navLinks');
+    var open = links.classList.toggle('open');
     btn.setAttribute('aria-expanded', open);
     btn.textContent = open ? '✕' : '☰';
   }
-  // Close mobile nav when a link is clicked
-  document.querySelectorAll('#navLinks a').forEach(a => {
-    a.addEventListener('click', () => {
-      const links = document.getElementById('navLinks');
-      const btn = document.querySelector('.nav-toggle');
-      if (links.classList.contains('open')) {
+  document.querySelectorAll('#navLinks a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      var links = document.getElementById('navLinks');
+      var btn = document.querySelector('.nav-toggle');
+      if (links && links.classList.contains('open')) {
         links.classList.remove('open');
         btn.setAttribute('aria-expanded', 'false');
         btn.textContent = '☰';
       }
     });
   });
+
+  // Floating nav scroll tint
+  (function() {
+    var nav = document.getElementById('mainNav');
+    if (!nav) return;
+    window.addEventListener('scroll', function() {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+  })();
 </script>
 
 </body>
