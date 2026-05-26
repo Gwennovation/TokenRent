@@ -260,7 +260,7 @@
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         My Rentals
       </button>
-      <button class="d-nav" data-view="requests" onclick="navigate('#pending')">
+      <button class="d-nav" data-view="pending" onclick="navigate('#pending')">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Pending
         <span class="badge-count" id="navBadgeRequests" style="display:none">0</span>
@@ -294,7 +294,7 @@
             <h2>Good morning, Isaac 👋</h2>
             <p>Friday, May 22, 2026 · Makati City</p>
           </div>
-          <a href="list-item.html" class="btn btn-primary">+ List New Item</a>
+          <button class="btn btn-primary" onclick="navigate('#list')">+ List New Item</button>
         </div>
 
         <!-- Stats -->
@@ -333,7 +333,7 @@
         <div class="card-block">
           <div class="cb-header">
             <div class="cb-title">Active Rentals</div>
-            <button class="cb-action" onclick="showTab('rentals',document.querySelectorAll('.d-nav')[1])">View All →</button>
+            <button class="cb-action" onclick="navigate('#rentals')">View All →</button>
           </div>
           <div class="tr-table-scroll">
             <table class="tr-table">
@@ -347,7 +347,7 @@
         <div class="card-block">
           <div class="cb-header">
             <div class="cb-title">Pending Requests</div>
-            <button class="cb-action" onclick="showTab('requests',document.querySelectorAll('.d-nav')[2])">View All →</button>
+            <button class="cb-action" onclick="navigate('#pending')">View All →</button>
           </div>
           <div class="tr-table-scroll">
             <table class="tr-table">
@@ -391,7 +391,7 @@
       <div class="tab-content" id="tab-items">
         <div class="dash-topbar">
           <div class="greet"><h2>My Items</h2><p>Equipment you've listed for rent.</p></div>
-          <a href="list-item.html" class="btn btn-primary">+ Add Item</a>
+          <button class="btn btn-primary" onclick="navigate('#list')">+ Add Item</button>
         </div>
         <div class="card-block">
           <div class="tr-table-scroll">
@@ -649,7 +649,7 @@
           <td>${fmt$(it.dailyRate)}</td>
           <td><span class="badge badge-${it.status === 'available' ? 'available' : it.status === 'rented' ? 'rented' : 'overdue'}">${it.status}</span></td>
           <td><a class="btn btn-ghost btn-sm" href="item-detail.html?id=${it._id}">View</a></td>
-        </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No items listed yet. <a href="list-item.html" style="color:var(--cyan)">List your first one →</a></td></tr>`;
+        </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No items listed yet. <a href="#list" onclick="navigate('#list'); return false;" style="color:var(--cyan)">List your first one →</a></td></tr>`;
     } catch (err) {
       document.getElementById('tbMyItems').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:30px">${err.message}</td></tr>`;
     }
@@ -700,9 +700,7 @@
       // Update nav badge counts after stats load
       loadStats().then(stats => {
         if (stats) {
-          const br = document.getElementById('navBadgeRentals');
           const bp = document.getElementById('navBadgeRequests');
-          if (br && stats.activeRentals > 0) br.textContent = stats.activeRentals;
           if (bp && stats.pendingRequests > 0) bp.textContent = stats.pendingRequests;
         }
       });
