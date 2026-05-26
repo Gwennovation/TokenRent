@@ -50,15 +50,19 @@ async function loadView(view, params) {
   _setActiveNav(view);
 
   switch (view) {
-    case 'browse':
-      document.getElementById('browseView').classList.add('active');
-      await loadBrowseView(params);
+    case 'browse': {
+      const bv = document.getElementById('browseView');
+      if (bv) bv.classList.add('active');
+      if (typeof loadBrowseView === 'function') await loadBrowseView(params);
       break;
+    }
 
-    case 'list':
-      document.getElementById('listView').classList.add('active');
-      loadListView();
+    case 'list': {
+      const lv = document.getElementById('listView');
+      if (lv) lv.classList.add('active');
+      if (typeof loadListView === 'function') loadListView();
       break;
+    }
 
     case 'overview':
       _showTab('overview');
