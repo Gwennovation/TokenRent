@@ -225,7 +225,7 @@ function _bRender(items) {
   if (!items.length) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 0">
       <div style="color:var(--muted);margin-bottom:12px">No items found.</div>
-      <button class="btn btn-ghost btn-sm" onclick="_bSetCat('all')">Clear filters</button>
+      <button class="btn btn-ghost btn-sm" onclick="_bSetCat('all');_bState.search='';const s=document.getElementById('bSearch');if(s)s.value='';">Clear filters</button>
     </div>`;
     return;
   }
@@ -234,7 +234,7 @@ function _bRender(items) {
 
   grid.innerHTML = items.map(it => {
     const cover = (it.photos && it.photos[0] && it.photos[0].url) ||
-                  `https://picsum.photos/seed/${it.category||'item'}-${it._id}/400/300`;
+                  `https://picsum.photos/seed/${_esc(it.category||'item')}-${_esc(it._id)}/400/300`;
     const owner = it.owner ? (it.owner.handcashHandle || it.owner.name || '') : '';
     return `
       <div class="item-card" onclick="openItemPanel('${_esc(it._id)}')" style="cursor:pointer">
