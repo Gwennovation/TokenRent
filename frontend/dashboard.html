@@ -543,8 +543,7 @@
 <script src="auth-gate.js"></script>
 <script>
   // ─── DATA LOADERS ──────────────────────────────────────────────────
-  const fmt$ = n => '₱' + (n || 0).toLocaleString();
-  const fmtDate = d => new Date(d).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+  // fmt$, fmtDate declared in dashboard.js (loaded before this inline script)
   const fmtRange = (s, e) => `${fmtDate(s)} – ${fmtDate(e)}`;
   const fallbackImg = (cat, id) => `https://picsum.photos/seed/${cat || 'item'}-${id}/120/120`;
   const counterpartyName = u => u ? (u.handcashHandle || u.name || u.email || '—') : '—';

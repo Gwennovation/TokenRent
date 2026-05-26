@@ -7,7 +7,7 @@
 'use strict';
 
 /* ── Utilities ───────────────────────────────────────────────── */
-const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// _esc is declared in rental-modal.js (loaded before this file)
 const fmt$ = n => '₱' + (n || 0).toLocaleString('en-PH');
 const fmtDate = d => new Date(d).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
