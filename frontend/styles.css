@@ -878,7 +878,7 @@ p { margin: 0; }
   font-size: .85rem; font-family: 'DM Sans', sans-serif;
   transition: border-color .2s;
 }
-.ip-booking input[type=date]:focus { border-color: var(--cyan); outline: none; }
+.ip-booking input[type=date]:focus { border-color: var(--cyan); outline: none; box-shadow: 0 0 0 3px rgba(0,200,255,.12); }
 .ip-booking-total {
   display: flex; justify-content: space-between; align-items: center;
   font-size: .82rem; padding: 8px 0; border-top: 1px solid var(--border-soft);
@@ -901,18 +901,19 @@ p { margin: 0; }
   transition: border-color .2s;
 }
 .browse-search:focus { border-color: var(--cyan); outline: none; box-shadow: 0 0 0 3px rgba(0,200,255,.12); }
-.browse-search::placeholder { color: rgba(156,163,175,.5); }
+.browse-search::placeholder { color: rgba(156,163,175,.6); }
 .browse-select {
   background: var(--bg-subtle); border: 1px solid var(--border-mid);
   border-radius: 10px; color: var(--muted); padding: 9px 12px;
   font-size: .82rem; font-family: 'DM Sans', sans-serif;
   cursor: pointer;
 }
+.browse-select:focus { border-color: var(--cyan); outline: none; }
 .browse-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .browse-pill {
   background: var(--bg-subtle); border: 1px solid var(--border-mid);
   border-radius: 99px; padding: 5px 14px; font-size: .75rem;
-  cursor: pointer; color: var(--muted); transition: all .15s;
+  cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background-color .15s;
 }
 .browse-pill:hover { border-color: var(--cyan); color: var(--white); }
 .browse-pill.active { background: var(--cyan-10); border-color: var(--cyan); color: var(--cyan); font-weight: 700; }
