@@ -114,6 +114,10 @@ function _updateNav(user) {
     if (sideName) sideName.textContent = name;
     if (sideRole) sideRole.textContent = user.role === 'admin' ? 'Admin' : 'Owner + Renter';
   }
+
+  // ── Dashboard fixed header user name ──────────────────────────
+  const headerName = document.getElementById('headerUserName');
+  if (headerName && user) headerName.textContent = Auth.displayName();
 }
 
 document.addEventListener('DOMContentLoaded', () => Auth.refresh().then(_updateNav));

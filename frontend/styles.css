@@ -88,7 +88,7 @@ p { margin: 0; }
 .bg-card   { background: var(--bg-card) !important; }
 
 /* Page wrapper offset for floating nav */
-.page { padding-top: 80px; min-height: 100vh; }
+.page { padding-top: 96px; min-height: 100vh; }
 
 /* ---------- NAV ---------- */
 
@@ -108,13 +108,13 @@ p { margin: 0; }
   display: flex;
   align-items: center;
   position: relative;
-  background: rgba(20, 20, 36, 0.72);
+  background: rgba(22, 22, 42, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
   border-radius: 999px;
   padding: 10px 10px 10px 22px;
-  box-shadow: 0 4px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+  box-shadow: 0 4px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1);
   transition: background .3s, border-color .3s;
   gap: 4px;
 }
@@ -204,7 +204,7 @@ p { margin: 0; }
   .nav-links a.active { color: var(--cyan); background: rgba(0,200,255,.06); }
   .nav-cta { text-align: center; margin-left: 0 !important; }
   .nav-toggle { display: flex; align-items: center; }
-  .page { padding-top: 72px; }
+  .page { padding-top: 80px; }
 }
 
 /* ---------- BUTTONS (overrides Bootstrap btn) ---------- */
@@ -1025,7 +1025,35 @@ p { margin: 0; }
 .item-card .ic-rating { font-size: .76rem; color: var(--muted); }
 .item-card .ic-rating em { color: #FFC000; font-style: normal; }
 
-/* Dashboard shell: no top-nav offset */
-.dash-shell .page { padding-top: 0; }
+/* Dashboard shell: fixed header is 64px, not the floating pill */
+.page.dash-shell { padding-top: 64px; }
+
+/* Dashboard fixed header */
+.dash-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 64px;
+  background: rgba(11, 11, 18, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1020;
+}
+.dash-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -.5px;
+  color: var(--white);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.dash-logo em { color: var(--cyan); font-style: normal; }
+.dash-head-right { display: flex; align-items: center; gap: 12px; }
+.dash-head-name { font-size: .82rem; color: var(--muted); font-weight: 500; }
 
 .rdm-chat-err { color: var(--danger); font-size: .74rem; margin-top: 6px; display: none; }
