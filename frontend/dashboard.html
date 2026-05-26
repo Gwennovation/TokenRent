@@ -228,18 +228,6 @@
 </head>
 <body>
 
-<nav class="tr-nav">
-  <a href="index.html" class="nav-logo">T<em>0</em>kenRent</a>
-  <button class="nav-toggle ms-auto" aria-label="Toggle menu" aria-expanded="false" onclick="toggleNav(this)">☰</button>
-  <div class="nav-links ms-auto" id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="how-it-works.html">How It Works</a>
-    <a href="browse.html">Browse</a>
-    <a href="list-item.html">List Item</a>
-    <a href="dashboard.html" class="active">Dashboard</a>
-    <a href="login.html" class="nav-cta">Login</a>
-  </div>
-</nav>
 
 <div class="page">
   <div class="dash-layout">
@@ -254,43 +242,41 @@
         </div>
       </div>
 
-      <div class="dash-nav-section">Overview</div>
-      <button class="d-nav active" onclick="showTab('overview',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
-        Dashboard
+      <button class="d-nav" data-view="browse" onclick="navigate('#browse')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Browse
       </button>
-      <button class="d-nav" onclick="showTab('rentals',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
-        My Rentals <span class="badge-count" id="navBadgeRentals"></span>
-      </button>
-      <button class="d-nav" onclick="showTab('requests',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
-        Pending <span class="badge-count" id="navBadgeRequests"></span>
+      <button class="d-nav" data-view="list" onclick="navigate('#list')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        List an Item
       </button>
 
-      <div class="dash-nav-section">Listings</div>
-      <button class="d-nav" onclick="showTab('items',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+      <div class="dash-nav-section">My Activity</div>
+      <button class="d-nav" data-view="overview" onclick="navigate('#overview')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </button>
+      <button class="d-nav" data-view="rentals" onclick="navigate('#rentals')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        My Rentals
+      </button>
+      <button class="d-nav" data-view="requests" onclick="navigate('#pending')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Pending
+        <span class="badge-count" id="navBadgeRequests" style="display:none">0</span>
+      </button>
+      <button class="d-nav" data-view="items" onclick="navigate('#items')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         My Items
       </button>
-      <button class="d-nav" onclick="location.href='list-item.html'">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>
-        List New Item
-      </button>
 
-      <div class="dash-nav-section">Activity</div>
-      <button class="d-nav" onclick="showTab('history',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-        History
-      </button>
-      <button class="d-nav" onclick="showTab('messages',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <div class="dash-nav-section" style="margin-top:8px"></div>
+      <button class="d-nav" data-view="messages" onclick="navigate('#messages')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Messages
       </button>
-
-      <div class="dash-nav-section">Account</div>
-      <button class="d-nav" onclick="showTab('settings',this)">
-        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
+      <button class="d-nav" data-view="settings" onclick="navigate('#settings')">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
       </button>
     </aside>
@@ -475,6 +461,52 @@
         </div>
       </div>
 
+      <!-- ── Browse View ──────────────────────────────────────────────────── -->
+      <div id="browseView" class="app-view">
+        <div id="browseHeader"></div>
+        <div id="appMain">
+          <div id="browseGrid"></div>
+          <!-- Item Detail Panel -->
+          <div id="itemPanel">
+            <div class="ip-photo-wrap">
+              <img id="ipPhoto" class="ip-photo" src="" alt="" style="display:none"/>
+              <div id="ipPhotoPlaceholder" class="ip-photo-placeholder">No photo</div>
+              <button class="ip-close" onclick="closeItemPanel()" aria-label="Close">×</button>
+            </div>
+            <div class="ip-body">
+              <div>
+                <div class="ip-title" id="ipTitle"></div>
+                <div class="ip-meta"  id="ipMeta"></div>
+              </div>
+              <div class="ip-owner" id="ipOwner"></div>
+              <div id="ipPricing"></div>
+              <div class="ip-booking" id="ipBooking">
+                <div>
+                  <label for="ipStart">Start date</label>
+                  <input type="date" id="ipStart" onchange="ipCalcTotal()"/>
+                </div>
+                <div>
+                  <label for="ipEnd">End date</label>
+                  <input type="date" id="ipEnd" onchange="ipCalcTotal()"/>
+                </div>
+                <div class="ip-booking-total">
+                  <span style="color:var(--muted);font-size:.8rem">Total</span>
+                  <span class="tot" id="ipTotal">—</span>
+                </div>
+                <button class="btn btn-primary ip-book-btn" onclick="ipBook()">Book Now</button>
+                <div class="ip-book-err" id="ipBookErr"></div>
+                <div class="ip-book-success" id="ipBookSuccess">Booking request sent!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── List an Item View ─────────────────────────────────────────── -->
+      <div id="listView" class="app-view">
+        <div id="listFormContainer"></div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -493,6 +525,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="auth.js"></script>
 <script src="rental-modal.js"></script>
+<script src="dashboard.js"></script>
 <script src="auth-gate.js"></script>
 <script>
   // ─── DATA LOADERS ──────────────────────────────────────────────────
