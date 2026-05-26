@@ -257,9 +257,155 @@ function _bRender(items) {
   }).join('');
 }
 
+/* ── Item detail panel ───────────────────────────────────────── */
+let _ipItem     = null;  // current item data
+let _ipDailyRate = 0;
+
+async function openItemPanel(itemId) {
+  // Update URL without triggering full re-render
+  const newHash = '#browse?item=' + itemId;
+  if (location.hash !== newHash) {
+    history.replaceState(null, '', newHash);
+  }
+
+  document.getElementById('appMain').classList.add('panel-open');
+
+  // Clear previous content
+  document.getElementById('ipTitle').textContent = 'Loading…';
+  document.getElementById('ipMeta').textContent  = '';
+  document.getElementById('ipOwner').innerHTML   = '';
+  document.getElementById('ipPricing').innerHTML = '';
+  document.getElementById('ipTotal').textContent = '—';
+  document.getElementById('ipBookErr').style.display    = 'none';
+  document.getElementById('ipBookSuccess').style.display = 'none';
+
+  try {
+    const res  = await fetch(`/api/items/${itemId}`, { credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load item');
+    _ipItem      = data.item || data;
+    _ipDailyRate = _ipItem.dailyRate || 0;
+    _ipRender(_ipItem);
+  } catch (err) {
+    document.getElementById('ipTitle').textContent = err.message;
+  }
+}
+
+function _ipRender(it) {
+  const cover  = it.photos && it.photos[0] && it.photos[0].url;
+  const photo  = document.getElementById('ipPhoto');
+  const pholder = document.getElementById('ipPhotoPlaceholder');
+  if (cover) {
+    photo.src = cover; photo.alt = it.title || ''; photo.style.display = 'block';
+    pholder.style.display = 'none';
+  } else {
+    photo.style.display = 'none'; pholder.style.display = 'flex';
+  }
+
+  document.getElementById('ipTitle').textContent = it.title || '—';
+  document.getElementById('ipMeta').textContent  =
+    [it.category, it.condition].filter(Boolean).join(' · ');
+
+  const owner = it.owner || {};
+  const ownerName = owner.handcashHandle || owner.name || 'Owner';
+  const ownerInit = ownerName.slice(0, 2).toUpperCase();
+  document.getElementById('ipOwner').innerHTML = `
+    <div class="ip-owner-av">${_esc(ownerInit)}</div>
+    <div>
+      <div class="ip-owner-name">${_esc(ownerName)}</div>
+      <div class="ip-owner-sub">${_esc(owner.location || '')}</div>
+    </div>`;
+
+  document.getElementById('ipPricing').innerHTML = `
+    <div class="ip-price-row">
+      <span class="label">Daily rate</span>
+      <span class="value accent">${fmt$(_ipDailyRate)}/day</span>
+    </div>
+    <div class="ip-price-row">
+      <span class="label">Security deposit</span>
+      <span class="value">${fmt$(it.securityDeposit)}</span>
+    </div>
+    <div class="ip-price-row">
+      <span class="label">Min / max days</span>
+      <span class="value">${it.minDays||1} – ${it.maxDays||30}</span>
+    </div>`;
+}
+
+function ipCalcTotal() {
+  const s = document.getElementById('ipStart')?.value;
+  const e = document.getElementById('ipEnd')?.value;
+  const totalEl = document.getElementById('ipTotal');
+  if (!s || !e) { totalEl.textContent = '—'; return; }
+  const days = Math.round((new Date(e) - new Date(s)) / 86400000);
+  if (days <= 0) { totalEl.textContent = 'Invalid range'; return; }
+  const subtotal = days * _ipDailyRate;
+  const deposit  = _ipItem ? (_ipItem.securityDeposit || 0) : 0;
+  totalEl.textContent = fmt$(subtotal + deposit) + ` (${days}d + deposit)`;
+}
+
+async function ipBook() {
+  if (!_ipItem) return;
+  const startDate = document.getElementById('ipStart')?.value;
+  const endDate   = document.getElementById('ipEnd')?.value;
+  const errEl     = document.getElementById('ipBookErr');
+  const okEl      = document.getElementById('ipBookSuccess');
+  const btn       = document.querySelector('.ip-book-btn');
+
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  if (!startDate || !endDate) {
+    errEl.textContent = 'Please pick start and end dates.';
+    errEl.style.display = 'block'; return;
+  }
+  const days = Math.round((new Date(endDate) - new Date(startDate)) / 86400000);
+  if (days <= 0) {
+    errEl.textContent = 'End date must be after start date.';
+    errEl.style.display = 'block'; return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Booking…'; }
+  try {
+    const res  = await fetch('/api/rentals', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item: _ipItem._id, startDate, endDate }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Booking failed');
+    okEl.style.display = 'block';
+    if (btn) { btn.disabled = false; btn.textContent = 'Book Now'; }
+    // Refresh pending count in sidebar
+    if (typeof loadStats === 'function') loadStats();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+    if (btn) { btn.disabled = false; btn.textContent = 'Book Now'; }
+  }
+}
+
+function closeItemPanel() {
+  document.getElementById('appMain').classList.remove('panel-open');
+  history.replaceState(null, '', '#browse');
+  _ipItem = null;
+  _ipDailyRate = 0;
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('appMain')?.classList.contains('panel-open')) {
+    closeItemPanel();
+  }
+});
+
 /* ── Expose globals ──────────────────────────────────────────── */
 window.navigate    = navigate;
 window._bSchedule  = _bSchedule;
 window._bSortChange = _bSortChange;
 window._bSetCat    = _bSetCat;
 window._bFetch     = _bFetch;
+window.openItemPanel  = openItemPanel;
+window.closeItemPanel = closeItemPanel;
+window.ipCalcTotal    = ipCalcTotal;
+window.ipBook         = ipBook;
