@@ -439,12 +439,7 @@
 <script src="auth.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    Auth.ready().then(user => {
-      if (user) {
-        window.location.replace('dashboard.html#browse');
-        return;
-      }
-    });
+    Auth.ready(); // warm auth state for nav pill — no redirect
   });
 
   function toggleNav(btn) {

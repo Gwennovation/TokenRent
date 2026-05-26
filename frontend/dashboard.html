@@ -473,36 +473,40 @@
         <div id="browseHeader"></div>
         <div id="appMain">
           <div id="browseGrid"></div>
-          <!-- Item Detail Panel -->
-          <div id="itemPanel">
-            <div class="ip-photo-wrap">
-              <img id="ipPhoto" class="ip-photo" src="" alt="" style="display:none"/>
-              <div id="ipPhotoPlaceholder" class="ip-photo-placeholder">No photo</div>
-              <button class="ip-close" onclick="closeItemPanel()" aria-label="Close">×</button>
-            </div>
-            <div class="ip-body">
-              <div>
-                <div class="ip-title" id="ipTitle"></div>
-                <div class="ip-meta"  id="ipMeta"></div>
+          <!-- Item Detail Modal (overlay) -->
+          <div id="itemPanel" onclick="if(event.target===this)closeItemPanel()">
+            <div class="ip-modal">
+              <div class="ip-photo-wrap">
+                <img id="ipPhoto" class="ip-photo" src="" alt="" style="display:none"/>
+                <div id="ipPhotoPlaceholder" class="ip-photo-placeholder">No photo</div>
+                <button class="ip-close" onclick="closeItemPanel()" aria-label="Close">×</button>
               </div>
-              <div class="ip-owner" id="ipOwner"></div>
-              <div id="ipPricing"></div>
-              <div class="ip-booking" id="ipBooking">
+              <div class="ip-body">
                 <div>
-                  <label for="ipStart">Start date</label>
-                  <input type="date" id="ipStart" onchange="ipCalcTotal()"/>
+                  <div class="ip-title" id="ipTitle"></div>
+                  <div class="ip-meta"  id="ipMeta"></div>
                 </div>
-                <div>
-                  <label for="ipEnd">End date</label>
-                  <input type="date" id="ipEnd" onchange="ipCalcTotal()"/>
+                <div class="ip-owner" id="ipOwner"></div>
+                <div id="ipPricing"></div>
+                <div class="ip-booking" id="ipBooking">
+                  <div class="ip-booking-dates">
+                    <div>
+                      <label for="ipStart">Start date</label>
+                      <input type="date" id="ipStart" onchange="ipCalcTotal()"/>
+                    </div>
+                    <div>
+                      <label for="ipEnd">End date</label>
+                      <input type="date" id="ipEnd" onchange="ipCalcTotal()"/>
+                    </div>
+                  </div>
+                  <div class="ip-booking-total">
+                    <span style="color:var(--muted);font-size:.8rem">Total</span>
+                    <span class="tot" id="ipTotal">—</span>
+                  </div>
+                  <button class="btn btn-primary ip-book-btn" onclick="ipBook()">Book Now</button>
+                  <div class="ip-book-err" id="ipBookErr"></div>
+                  <div class="ip-book-success" id="ipBookSuccess">Booking request sent!</div>
                 </div>
-                <div class="ip-booking-total">
-                  <span style="color:var(--muted);font-size:.8rem">Total</span>
-                  <span class="tot" id="ipTotal">—</span>
-                </div>
-                <button class="btn btn-primary ip-book-btn" onclick="ipBook()">Book Now</button>
-                <div class="ip-book-err" id="ipBookErr"></div>
-                <div class="ip-book-success" id="ipBookSuccess">Booking request sent!</div>
               </div>
             </div>
           </div>
