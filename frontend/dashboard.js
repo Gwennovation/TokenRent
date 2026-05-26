@@ -403,6 +403,265 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ── List an Item view ───────────────────────────────────────── */
+let _liPhotos = [];  // { file, preview } objects — reset each time view loads
+
+function loadListView() {
+  _liPhotos = [];
+  const container = document.getElementById('listFormContainer');
+  if (!container) return;
+
+  container.innerHTML = `
+    <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin-bottom:6px">List an Item</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:28px">Earn from gear you don't use every day.</p>
+
+    <!-- Step progress -->
+    <div class="step-track" style="display:flex;gap:0;margin-bottom:28px">
+      <div class="step active" id="liStep1" style="flex:1;text-align:center;font-size:.72rem;padding-bottom:8px;border-bottom:2px solid var(--cyan);color:var(--cyan)">1. Details</div>
+      <div class="step"       id="liStep2" style="flex:1;text-align:center;font-size:.72rem;padding-bottom:8px;border-bottom:2px solid var(--border-mid);color:var(--muted)">2. Photos</div>
+      <div class="step"       id="liStep3" style="flex:1;text-align:center;font-size:.72rem;padding-bottom:8px;border-bottom:2px solid var(--border-mid);color:var(--muted)">3. Pricing</div>
+    </div>
+
+    <form id="liForm" novalidate>
+      <!-- Details -->
+      <div class="form-section" style="margin-bottom:24px">
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label" for="liTitle">Title <span style="color:var(--pink)">*</span></label>
+          <input class="form-control" id="liTitle" maxlength="80" placeholder="e.g. Sony A7III Camera Kit" required/>
+          <div style="text-align:right;font-size:.68rem;color:var(--muted);margin-top:3px"><span id="liTitleCount">0</span>/80</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label" for="liCat">Category <span style="color:var(--pink)">*</span></label>
+            <select class="form-select" id="liCat" required>
+              <option value="">Select…</option>
+              <option value="construction">Construction</option>
+              <option value="electronics">Electronics</option>
+              <option value="photography">Photography</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="vehicles">Vehicles</option>
+              <option value="events">Events</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="liCond">Condition <span style="color:var(--pink)">*</span></label>
+            <select class="form-select" id="liCond" required>
+              <option value="">Select…</option>
+              <option value="Like New">Like New</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="liDesc">Description <span style="color:var(--pink)">*</span></label>
+          <textarea class="form-control" id="liDesc" rows="4" minlength="30" maxlength="600"
+                    placeholder="Describe your item — condition, what's included, any restrictions…" required></textarea>
+          <div style="text-align:right;font-size:.68rem;color:var(--muted);margin-top:3px"><span id="liDescCount">0</span>/600</div>
+        </div>
+      </div>
+
+      <!-- Photos -->
+      <div class="form-section" style="margin-bottom:24px">
+        <label class="form-label" style="margin-bottom:8px">Photos (up to 6)</label>
+        <div id="liDropzone" style="border:2px dashed var(--border-mid);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:border-color .2s;color:var(--muted);font-size:.85rem"
+             onclick="document.getElementById('liFileInput').click()"
+             ondragover="event.preventDefault();this.style.borderColor='var(--cyan)'"
+             ondragleave="this.style.borderColor=''"
+             ondrop="_liDrop(event)">
+          Drag photos here or click to upload
+        </div>
+        <input type="file" id="liFileInput" accept="image/*" multiple style="display:none"
+               onchange="_liFiles(this.files)"/>
+        <div id="liPhotoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px"></div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="form-section" style="margin-bottom:24px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label" for="liRate">Daily Rate (₱) <span style="color:var(--pink)">*</span></label>
+            <input class="form-control" id="liRate" type="number" min="1" placeholder="e.g. 800" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="liDeposit">Security Deposit (₱) <span style="color:var(--pink)">*</span></label>
+            <input class="form-control" id="liDeposit" type="number" min="0" placeholder="e.g. 2000" required/>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label" for="liMin">Min Days</label>
+            <input class="form-control" id="liMin" type="number" min="1" value="1"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="liMax">Max Days</label>
+            <input class="form-control" id="liMax" type="number" min="1" value="30"/>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group">
+            <label class="form-label" for="liFrom">Available From</label>
+            <input class="form-control" id="liFrom" type="date"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="liUntil">Available Until</label>
+            <input class="form-control" id="liUntil" type="date"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px">
+        <label style="display:flex;align-items:center;gap:10px;font-size:.85rem;cursor:pointer">
+          <input type="checkbox" id="liTerms" required/>
+          I agree to the T0kenRent rental terms and am the legal owner of this item.
+        </label>
+      </div>
+
+      <div id="liErr" style="color:var(--danger);font-size:.82rem;margin-bottom:12px;display:none"></div>
+
+      <button type="submit" class="btn btn-primary" id="liSubmit" style="width:100%">List This Item</button>
+    </form>
+  `;
+
+  // Attach event listeners
+  document.getElementById('liTitle').addEventListener('input', e => {
+    document.getElementById('liTitleCount').textContent = e.target.value.length;
+    _liUpdateSteps();
+  });
+  document.getElementById('liDesc').addEventListener('input', e => {
+    document.getElementById('liDescCount').textContent = e.target.value.length;
+    _liUpdateSteps();
+  });
+  ['liCat', 'liCond', 'liRate', 'liDeposit'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', _liUpdateSteps);
+  });
+  document.getElementById('liForm').addEventListener('submit', _liSubmit);
+}
+
+function _liUpdateSteps() {
+  const title = document.getElementById('liTitle')?.value || '';
+  const cat   = document.getElementById('liCat')?.value  || '';
+  const cond  = document.getElementById('liCond')?.value || '';
+  const desc  = document.getElementById('liDesc')?.value || '';
+  const rate  = document.getElementById('liRate')?.value || '';
+  const dep   = document.getElementById('liDeposit')?.value;
+
+  const s1 = title.length >= 3 && cat && cond && desc.length >= 30;
+  const s2 = _liPhotos.length > 0;
+  const s3 = rate >= 1 && dep !== '';
+
+  ['liStep1','liStep2','liStep3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const done = [s1,s2,s3][i];
+    el.style.borderBottomColor = done ? 'var(--cyan)' : 'var(--border-mid)';
+    el.style.color = done ? 'var(--cyan)' : 'var(--muted)';
+  });
+}
+
+function _liDrop(e) {
+  e.preventDefault();
+  document.getElementById('liDropzone').style.borderColor = '';
+  if (e.dataTransfer?.files) _liFiles(e.dataTransfer.files);
+}
+
+function _liFiles(files) {
+  const MAX = 6;
+  Array.from(files).forEach(file => {
+    if (_liPhotos.length >= MAX) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) return; // 5MB max
+    const preview = URL.createObjectURL(file);
+    _liPhotos.push({ file, preview });
+  });
+  _liRenderPhotos();
+  _liUpdateSteps();
+}
+
+function _liRenderPhotos() {
+  const grid = document.getElementById('liPhotoGrid');
+  if (!grid) return;
+  grid.innerHTML = _liPhotos.map((p, i) => `
+    <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--bg-surface)">
+      <img src="${p.preview}" style="width:100%;height:100%;object-fit:cover;display:block"/>
+      <button onclick="_liRemovePhoto(${i})"
+              style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);border:none;
+                     color:#fff;width:20px;height:20px;border-radius:50%;cursor:pointer;
+                     font-size:.75rem;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+    </div>`).join('');
+}
+
+function _liRemovePhoto(i) {
+  URL.revokeObjectURL(_liPhotos[i].preview);
+  _liPhotos.splice(i, 1);
+  _liRenderPhotos();
+  _liUpdateSteps();
+}
+
+async function _liSubmit(e) {
+  e.preventDefault();
+  const errEl  = document.getElementById('liErr');
+  const btn    = document.getElementById('liSubmit');
+  errEl.style.display = 'none';
+
+  const title  = document.getElementById('liTitle').value.trim();
+  const cat    = document.getElementById('liCat').value;
+  const cond   = document.getElementById('liCond').value;
+  const desc   = document.getElementById('liDesc').value.trim();
+  const rate   = parseFloat(document.getElementById('liRate').value);
+  const dep    = parseFloat(document.getElementById('liDeposit').value);
+  const minD   = parseInt(document.getElementById('liMin').value) || 1;
+  const maxD   = parseInt(document.getElementById('liMax').value) || 30;
+  const from   = document.getElementById('liFrom').value;
+  const until  = document.getElementById('liUntil').value;
+  const terms  = document.getElementById('liTerms').checked;
+
+  if (!title || title.length < 3)  { _liErr('Title must be at least 3 characters.'); return; }
+  if (!cat)    { _liErr('Please select a category.'); return; }
+  if (!cond)   { _liErr('Please select a condition.'); return; }
+  if (desc.length < 30) { _liErr('Description must be at least 30 characters.'); return; }
+  if (!rate || rate < 1){ _liErr('Daily rate must be at least ₱1.'); return; }
+  if (isNaN(dep) || dep < 0) { _liErr('Deposit must be 0 or more.'); return; }
+  if (!terms)  { _liErr('You must agree to the terms.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Listing…';
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', desc);
+  fd.append('category', cat);
+  fd.append('condition', cond);
+  fd.append('dailyRate', rate);
+  fd.append('securityDeposit', dep);
+  fd.append('minDays', minD);
+  fd.append('maxDays', maxD);
+  if (from)  fd.append('availableFrom', from);
+  if (until) fd.append('availableTo',   until);
+  _liPhotos.forEach(p => fd.append('photos', p.file));
+
+  try {
+    const res  = await fetch('/api/items', { method: 'POST', body: fd, credentials: 'include' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create listing');
+    // Navigate to My Items so user sees the new listing
+    navigate('#items');
+    if (typeof loadMyItems === 'function') loadMyItems();
+  } catch (err) {
+    _liErr(err.message);
+    btn.disabled = false; btn.textContent = 'List This Item';
+  }
+}
+
+function _liErr(msg) {
+  const el = document.getElementById('liErr');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
 /* ── Expose globals ──────────────────────────────────────────── */
 window.navigate    = navigate;
 window._bSchedule  = _bSchedule;
@@ -413,3 +672,6 @@ window.openItemPanel  = openItemPanel;
 window.closeItemPanel = closeItemPanel;
 window.ipCalcTotal    = ipCalcTotal;
 window.ipBook         = ipBook;
+window._liRemovePhoto = _liRemovePhoto;
+window._liDrop        = _liDrop;
+window._liFiles       = _liFiles;
