@@ -118,6 +118,10 @@ function _updateNav(user) {
   // ── Dashboard fixed header user name ──────────────────────────
   const headerName = document.getElementById('headerUserName');
   if (headerName && user) headerName.textContent = Auth.displayName();
+
+  // ── Show Dashboard nav link when authenticated ─────────────────
+  const dashLink = document.getElementById('navDashLink');
+  if (dashLink) dashLink.style.display = user ? '' : 'none';
 }
 
 document.addEventListener('DOMContentLoaded', () => Auth.refresh().then(_updateNav));
