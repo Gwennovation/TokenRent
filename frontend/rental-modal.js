@@ -194,7 +194,81 @@ function _rdmRenderOverview() {
   `;
 }
 
+/* ── Contract tab ────────────────────────────────────────────── */
+async function _rdmRenderContract() {
+  if (!_rdmRental) return;
+  const r  = _rdmRental;
+  const it = r.item || {};
+  const el = _$('rdmContractContent');
+
+  // Generate deterministic SHA-256 hash from rental key fields
+  const raw = `${r._id}|${(it._id || '')}|${r.startDate}|${r.endDate}|${r.total}`;
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+  const hex  = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  // Display as 0x + groups of 16 for readability
+  const displayHash = '0x' + hex.match(/.{1,16}/g).join(' ');
+  const fullHash    = '0x' + hex;
+
+  const ownerName  = r.owner  ? (r.owner.handcashHandle  || r.owner.name  || 'Owner')  : '—';
+  const renterName = r.renter ? (r.renter.handcashHandle || r.renter.name || 'Renter') : '—';
+  const ownerLoc   = r.owner  && r.owner.location  ? ` · ${r.owner.location}`  : '';
+  const renterLoc  = r.renter && r.renter.location ? ` · ${r.renter.location}` : '';
+  // Contract total = subtotal + deposit (no platform fee on the blockchain view)
+  const contractTotal = (r.subtotal || 0) + (r.securityDeposit || 0);
+
+  el.innerHTML = `
+    <div class="rdm-contract">
+      <div class="rdm-contract-head">
+        <div class="rdm-contract-title">RENTAL AGREEMENT</div>
+        <div class="rdm-verified">Verified</div>
+      </div>
+      <div class="rdm-hash">${_esc(displayHash)}</div>
+      <div class="rdm-issued">Issued: ${_fmtTime(r.createdAt)}</div>
+
+      <div class="rdm-c-section">Parties</div>
+      <div class="rdm-c-row"><span class="k">Owner</span><span class="v">${_esc(ownerName + ownerLoc)}</span></div>
+      <div class="rdm-c-row"><span class="k">Renter</span><span class="v">${_esc(renterName + renterLoc)}</span></div>
+
+      <div class="rdm-c-section">Item</div>
+      <div class="rdm-c-row"><span class="k">Name</span><span class="v">${_esc(it.title || '—')}</span></div>
+      <div class="rdm-c-row"><span class="k">Category</span><span class="v">${_esc(it.category || '—')}</span></div>
+      <div class="rdm-c-row"><span class="k">Condition</span><span class="v">${_esc(it.condition || '—')}</span></div>
+
+      <div class="rdm-c-section">Terms</div>
+      <div class="rdm-c-row"><span class="k">Period</span><span class="v">${_fmtDate(r.startDate)} – ${_fmtDate(r.endDate)} (${r.days} days)</span></div>
+      <div class="rdm-c-row"><span class="k">Daily rate</span><span class="v">${_fmt$(r.dailyRate)}</span></div>
+      <div class="rdm-c-row"><span class="k">Subtotal</span><span class="v">${_fmt$(r.subtotal)}</span></div>
+      <div class="rdm-c-row"><span class="k">Network fee</span><span class="v">&lt; 0.00001 BSV (micropayment)</span></div>
+      <div class="rdm-c-row"><span class="k">Deposit</span><span class="v">${_fmt$(r.securityDeposit)} (refundable)</span></div>
+      <div class="rdm-c-row rdm-c-total"><span class="k">Total</span><span class="v">${_fmt$(contractTotal)}</span></div>
+
+      <div class="rdm-c-section">Network</div>
+      <div class="rdm-c-row"><span class="k">Chain</span><span class="v">Bitcoin SV (BSV)</span></div>
+      <div class="rdm-c-row"><span class="k">Ledger</span><span class="v">Simulated</span></div>
+      <div class="rdm-c-row"><span class="k">Confirmations</span><span class="v">6 ✓</span></div>
+    </div>
+    <button class="rdm-copy-btn" id="rdmCopyBtn" onclick="rdmCopyHash('${_esc(fullHash)}')">
+      Copy Contract ID
+    </button>
+  `;
+}
+
+async function rdmCopyHash(hash) {
+  try {
+    await navigator.clipboard.writeText(hash);
+    const btn = _$('rdmCopyBtn');
+    if (!btn) return;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy Contract ID';
+      btn.classList.remove('copied');
+    }, 2000);
+  } catch (e) { /* clipboard not available */ }
+}
+
 /* ── Expose globals ──────────────────────────────────────────── */
 window.openRentalModal  = openRentalModal;
 window.closeRentalModal = closeRentalModal;
 window.rdmSwitchTab     = rdmSwitchTab;
+window.rdmCopyHash      = rdmCopyHash;
