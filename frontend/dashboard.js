@@ -407,6 +407,7 @@ document.addEventListener('keydown', e => {
 let _liPhotos = [];  // { file, preview } objects — reset each time view loads
 
 function loadListView() {
+  _liPhotos.forEach(p => URL.revokeObjectURL(p.preview));
   _liPhotos = [];
   const container = document.getElementById('listFormContainer');
   if (!container) return;
@@ -551,7 +552,7 @@ function _liUpdateSteps() {
 
   const s1 = title.length >= 3 && cat && cond && desc.length >= 30;
   const s2 = _liPhotos.length > 0;
-  const s3 = rate >= 1 && dep !== '';
+  const s3 = parseFloat(rate) >= 1 && dep !== '';
 
   ['liStep1','liStep2','liStep3'].forEach((id, i) => {
     const el = document.getElementById(id);
