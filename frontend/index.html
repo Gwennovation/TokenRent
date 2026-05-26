@@ -432,16 +432,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="auth.js"></script>
 <script>
-  // Reflect auth state in the nav CTA without showing a gate.
   document.addEventListener('DOMContentLoaded', () => {
-    if (window.Auth && Auth.isAuthed()) {
-      const cta = document.querySelector('.nav-cta');
-      if (cta) {
-        cta.textContent = '⏻ ' + Auth.displayName();
-        cta.setAttribute('href', 'javascript:void(0)');
-        cta.onclick = (e) => { e.preventDefault(); if (confirm('Sign out?')) Auth.signOut(); };
+    Auth.ready().then(user => {
+      if (user) {
+        // Logged-in users go straight to the app shell
+        window.location.replace('dashboard.html#browse');
+        return;
       }
-    }
+      // Not logged in — stay on landing page (no action needed)
+    });
   });
 
   function toggleNav(btn){
