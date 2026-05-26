@@ -463,7 +463,7 @@ p { margin: 0; }
 
 /* ---------- FOOTER ---------- */
 .tr-footer {
-  background: var(--bg-mid);
+  background: var(--bg-subtle);
   border-top: 1px solid var(--border-soft);
   padding: 48px clamp(24px, 4vw, 56px) 28px;
 }
